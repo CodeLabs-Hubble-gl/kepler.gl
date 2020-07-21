@@ -62,8 +62,8 @@ const TRANSITION_DURATION = 0;
 
 const Attribution = () => (
   <StyledAttrbution>
-    <a href="https://kepler.gl/policy/" target="_blank" rel="noopener noreferrer">
-      © kepler.gl |{' '}
+    <a href="https://kepler.gl/policyz/" target="_blank" rel="noopener noreferrer">
+      © kepler.gl hello |{' '}
     </a>
     <a href="https://www.mapbox.com/about/maps/" target="_blank" rel="noopener noreferrer">
       © Mapbox |{' '}
@@ -445,6 +445,7 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
     };
 
     render() {
+      console.log("Hello World");
       const {
         mapState,
         mapStyle,

@@ -356,6 +356,7 @@ class App extends Component {
   };
 
   render() {
+    console.log("from app");
     return (
       <ThemeProvider theme={theme}>
         <GlobalStyle
