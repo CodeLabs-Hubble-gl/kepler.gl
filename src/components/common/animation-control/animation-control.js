@@ -29,6 +29,7 @@ import AnimationPlaybacksFactory from './playback-controls';
 import FloatingTimeDisplayFactory from './floating-time-display';
 import AnimationControllerFactory from './animation-controller';
 import {snapToMarks} from 'utils/data-utils';
+import HubbleExport from 'components/hubble-export';
 import {DEFAULT_TIME_FORMAT, ANIMATION_TYPE} from 'constants';
 
 const SliderWrapper = styled.div`
@@ -109,7 +110,9 @@ function AnimationControlFactory(
         : ANIMATION_TYPE.continuous;
 
       return (
+      
         <BottomWidgetInner className="bottom-widget--inner">
+            <HubbleExport />
           <AnimationWidgetInner className="animation-widget--inner">
             <div style={{marginLeft: '-10px'}}>
               <AnimationController
@@ -132,6 +135,7 @@ function AnimationControlFactory(
                   />
                 )}
               </AnimationController>
+            
             </div>
             <StyledDomain className="animation-control__time-domain">
               <span>{moment.utc(domain[0]).format(DEFAULT_TIME_FORMAT)}</span>
@@ -161,6 +165,7 @@ function AnimationControlFactory(
               />
             </div>
           </AnimationWidgetInner>
+         
           <FloatingTimeDisplay currentTime={currentTime} />
         </BottomWidgetInner>
       );
