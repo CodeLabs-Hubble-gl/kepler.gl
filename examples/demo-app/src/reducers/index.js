@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import {combineReducers} from 'redux';
+import {combineReducers} from 'redux'; 
 import {handleActions} from 'redux-actions';
 
 import keplerGlReducer, {combinedUpdaters, uiStateUpdaters} from 'kepler.gl/reducers';

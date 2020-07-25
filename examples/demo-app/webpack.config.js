@@ -37,6 +37,7 @@ const CONFIG = {
     publicPath: '/'
   },
 
+ 
   devtool: 'source-map',
 
   module: {
@@ -59,6 +60,8 @@ const CONFIG = {
   node: {
     fs: 'empty'
   },
+
+  
 
   // to support browser history api and remove the '#' sign
   devServer: {
