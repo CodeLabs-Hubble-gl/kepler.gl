@@ -19,18 +19,20 @@
 // THE SOFTWARE.
 
 import React from 'react';
-import styled from 'styled-components';
+import styled, { withTheme } from 'styled-components';
 import moment from 'moment';
 
 import Slider from 'components/common/slider/slider';
-import {BottomWidgetInner} from 'components/common/styled-components';
+import {BottomWidgetInner, Button} from 'components/common/styled-components';
 import SpeedControlFactory from './speed-control';
 import AnimationPlaybacksFactory from './playback-controls';
 import FloatingTimeDisplayFactory from './floating-time-display';
 import AnimationControllerFactory from './animation-controller';
 import {snapToMarks} from 'utils/data-utils';
-import HubbleExport from 'components/hubble-export';
 import {DEFAULT_TIME_FORMAT, ANIMATION_TYPE} from 'constants';
+import HubbleExport from 'components/hubble-export';
+import {connect as keplerGlConnect} from 'connect/keplergl-connect';
+
 
 const SliderWrapper = styled.div`
   display: flex;
@@ -45,10 +47,8 @@ const AnimationWidgetInner = styled.div`
   display: flex;
   align-items: center;
   height: 32px;
-
   .animation-control__speed-control {
     margin-right: -10px;
-
     .animation-control__speed-slider {
       right: calc(0% - 10px);
     }
@@ -110,9 +110,7 @@ function AnimationControlFactory(
         : ANIMATION_TYPE.continuous;
 
       return (
-      
         <BottomWidgetInner className="bottom-widget--inner">
-            <HubbleExport />
           <AnimationWidgetInner className="animation-widget--inner">
             <div style={{marginLeft: '-10px'}}>
               <AnimationController
@@ -135,7 +133,6 @@ function AnimationControlFactory(
                   />
                 )}
               </AnimationController>
-            
             </div>
             <StyledDomain className="animation-control__time-domain">
               <span>{moment.utc(domain[0]).format(DEFAULT_TIME_FORMAT)}</span>
@@ -165,8 +162,12 @@ function AnimationControlFactory(
               />
             </div>
           </AnimationWidgetInner>
-         
+          
+          <HubbleExport />
+          {/* Once "Export" button is clicked, this.state.isOpen: === True, once "X" is clicked, isOpen === False */}
+          {/* <Button onClick={this.handleExport}>Export</Button> */}
           <FloatingTimeDisplay currentTime={currentTime} />
+          
         </BottomWidgetInner>
       );
     }

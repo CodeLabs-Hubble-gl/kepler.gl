@@ -15,32 +15,10 @@ import {easing} from 'popmotion';
 import {useNextFrame, BasicControls} from '@hubble.gl/react';
 import {DeckAdapter} from 'hubble.gl';
 
-/*const [ready, setReady] = useState(false);
-const [busy, setBusy] = useState(false);*/
-
-function setReady(){
-    const ready = useState(false);
-
-    return ready;
-}
-
-function setBusy(){
-    const busy = useState(false);
-
-    return busy;
-}
-
-function returnDeckgl(){
-    const deckgl = useRef(null);
-    return deckgl;
-}
-
-function returnNextFrame(){
-    const nextFrame = useNextFrame();
-    return nextFrame;
-}
-
-
+// Modal
+import RenderSettingsModal from './render-settings-modal';
+import {Button} from 'components/common/styled-components';
+import {theme} from '../styles';
 
 // Hubble Part (Maybe we should get this in a different file or put everything on a folder)
  function sceneBuilder(animationLoop) {
@@ -220,7 +198,7 @@ class Scene extends Component {
 
         // work on this 
         return (
-            <div style={{position: 'absolute', top: '-500px', background: 'black'}}>
+            <div style={{position: 'absolute', top: '-1000px', background: 'black'}}>
               <DeckGL
                 /* {...this.props.deckGlProps} */ // Commented because it returns an empty object
               ref={r => {this.deckgl={current:r}}}
@@ -272,16 +250,34 @@ class Scene extends Component {
 
 
 class HubbleExport extends Component {
-  // To be used to store all modal components & functions 
-//   this.states = [ // React props
-//       keyframes: abstraction of keyframes,
-//       dlsjkas,
-//   ]
+
+constructor(props) {
+    super(props);
+    this.state = {
+        isOpen: false
+    };
+}
+
+handleClose() {this.setState({isOpen: false})} // X button in Kepler UI was clicked
+
+handleExport() { // Export button in Kepler UI was clicked
+    this.setState(state => ({
+        isOpen: true
+      }));
+    // stop rendering in bg
+    // setState
+    // pop up modal if isOpen. If false, closes modal TODO put function into render
+    // all the data is passed through and can use in deck/hubble components
+    return <h1>REACHED</h1>
+}
+
     render() {
         return (
-        <div>
-            <Scene/> 
-        </div>
+            <div>
+                <RenderSettingsModal isOpen={this.state.isOpen} handleClose={this.handleClose.bind(this)} />
+                <ThemeProvider theme={RenderSettingsModal}></ThemeProvider>
+                <Button onClick={() => this.handleExport()}>Export</Button> {/* anonymous function to bind state onclick  */}
+            </div>
         );
     }
 }
