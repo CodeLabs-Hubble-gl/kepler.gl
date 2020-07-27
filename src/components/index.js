@@ -22,7 +22,7 @@ import TimeRangeSliderFactory from './common/time-range-slider';
 import RangeSliderFactory from './common/range-slider';
 import {appInjector} from './container';
 
-// Components
+// Components 
 export {default as KeplerGl, default, injectComponents} from './container';
 
 // factories

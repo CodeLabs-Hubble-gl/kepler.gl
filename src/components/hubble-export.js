@@ -1,5 +1,5 @@
 import React, {Component, useState, useRef} from 'react';
-import styled, {withTheme} from 'styled-components';
+import styled, {ThemeProvider, withTheme} from 'styled-components';
 import {connect as keplerGlConnect} from 'connect/keplergl-connect';
 
 //Map Component
@@ -70,10 +70,7 @@ import {theme} from '../styles';
     }
   };
 
-  const adapter = new DeckAdapter(sceneBuilder);
-
-
-
+const adapter = new DeckAdapter(sceneBuilder);
 
 const TRANSITION_DURATION = 0;
 
@@ -102,17 +99,13 @@ function makeMapDispatchToProps() {
     return mapDispatchToProps;
 }
 
-
-
-class Scene extends Component {
+export class Scene extends Component {
 
     constructor(props) {
         super(props);
-    this.prop = this.props;
-
-      }
-
+   this.prop = this.props.prop;
    
+      }
 
   _renderLayer = (overlays, idx) => {
     const datasets = this.prop.visState.datasets;
@@ -124,17 +117,17 @@ class Scene extends Component {
     const interactionConfig = this.prop.visState.interactionConfig;
     const animationConfig = this.prop.visState.animationConfig;
 
-        const layer = layers[idx];
-        const data = layerData[idx];
-        const {gpuFilter} = datasets[layer.config.dataId] || {};
+    const layer = layers[idx];
+    const data = layerData[idx];
+    const {gpuFilter} = datasets[layer.config.dataId] || {};
   
-        const objectHovered = clicked || hoverInfo;
-        const layerCallbacks = {
+    const objectHovered = clicked || hoverInfo;
+    const layerCallbacks = {
           onSetLayerDomain: val => this._onLayerSetDomain(idx, val)
         };
   
         // Layer is Layer class
-        const layerOverlay = layer.renderLayer({
+    const layerOverlay = layer.renderLayer({
           data,
           gpuFilter,
           idx,
@@ -146,13 +139,21 @@ class Scene extends Component {
         });
         return overlays.concat(layerOverlay || []);
       };
+ 
+      // Testing purposes
+      print(prop){
+        console.log("this.deckgl", prop);
+      };
 
+      // Is this being used right?
+      componentDidMount() {
+        this.forceUpdate();
+      }
        
      //   interactionConfig,  
         render() {
-      //  const prop = this.props;
-     //   console.log("all props ", this.prop);
-      
+        console.log("all props ", this.props.prop);
+
         const mapStyle = this.prop.mapStyle;
         const mapState = this.prop.mapState;
         const layers = this.prop.visState.layers;    
@@ -165,11 +166,8 @@ class Scene extends Component {
         //Map data
         const mapboxApiAccessToken = this.prop.mapStyle.mapboxApiAccessToken;
         const mapboxApiUrl = this.prop.mapStyle.mapboxApiUrl;
-        
-
-
         // define trip and geojson layers 
-   let deckGlLayers = [];
+        let deckGlLayers = [];
 
         // wait until data is ready before render data layers
         if (layerData && layerData.length) {
@@ -184,7 +182,6 @@ class Scene extends Component {
         }
 
         // MapboxGLMap
-
         const mapProps = {
             ...mapState,
             preserveDrawingBuffer: true,
@@ -192,30 +189,18 @@ class Scene extends Component {
             mapboxApiUrl,
             transformRequest
           };
-
-
-          
-
-        // work on this 
+     
         return (
-            <div style={{position: 'absolute', top: '-1000px', background: 'black'}}>
+            <div>
               <DeckGL
-                /* {...this.props.deckGlProps} */ // Commented because it returns an empty object
-              ref={r => {this.deckgl={current:r}}}
-         
-
+                ref={r => {this.deckgl={current:r}}}
                 viewState={mapState}
                 id="default-deckgl-overlay2"
                 layers={deckGlLayers}
                 useDevicePixels={useDevicePixels}
                 width={width}
                 height={height}
-                
-                
-               
-             
-               
-                  /* onBeforeRender={this._onBeforeRender} // Not yet
+                /* onBeforeRender={this._onBeforeRender} // Not yet
                       onHover={visStateActions.onLayerHover} // Not yet
                       onClick={visStateActions.onLayerClick}*/ // Not yet
                 {...adapter.getProps(this.deckgl, () => {}, () => {this.forceUpdate()})}
@@ -227,8 +212,6 @@ class Scene extends Component {
                   mapStyle={mapStyle.bottomMapStyle}
                   getCursor={this.props.hoverInfo ? () => 'pointer' : undefined}
                   transitionDuration={TRANSITION_DURATION}
-                //  width={width}
-                // height={height}
                 ></MapboxGLMap>
               </DeckGL>
               <div style={{position: 'absolute'}}>
@@ -240,15 +223,10 @@ class Scene extends Component {
               </div>
             </div>
           );
-    
     }
 
 }
     
-
-
-
-
 class HubbleExport extends Component {
 
 constructor(props) {
@@ -274,8 +252,10 @@ handleExport() { // Export button in Kepler UI was clicked
     render() {
         return (
             <div>
-                <RenderSettingsModal isOpen={this.state.isOpen} handleClose={this.handleClose.bind(this)} />
-                <ThemeProvider theme={RenderSettingsModal}></ThemeProvider>
+             
+                <RenderSettingsModal isOpen={this.state.isOpen} handleClose={this.handleClose.bind(this)} prop={this.props}/>
+                <ThemeProvider theme={RenderSettingsModal}>
+                </ThemeProvider>
                 <Button onClick={() => this.handleExport()}>Export</Button> {/* anonymous function to bind state onclick  */}
             </div>
         );
@@ -287,4 +267,5 @@ handleExport() { // Export button in Kepler UI was clicked
 // 
 // 
 // 
-export default keplerGlConnect(mapStateToProps, makeMapDispatchToProps)(withTheme(Scene));
+export default keplerGlConnect(mapStateToProps, makeMapDispatchToProps)(withTheme(HubbleExport));
+

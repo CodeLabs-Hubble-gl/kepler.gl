@@ -193,7 +193,7 @@ class RenderSettingsPanel extends Component {
 
   render() {
     const {buttonHeight, settingsWidth, handleClose} = this.props;
-
+    console.log("props from render setting panel", this.props.prop)
     return (
       <Panel settingsWidth={settingsWidth} className="render-settings-panel">
         <PanelClose buttonHeight={buttonHeight} handleClose={handleClose}/>
