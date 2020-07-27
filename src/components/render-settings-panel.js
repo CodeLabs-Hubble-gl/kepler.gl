@@ -3,6 +3,7 @@ import styled, {withTheme} from 'styled-components';
 import {Button, Input} from 'kepler.gl/components/common/styled-components';
 import {Delete} from 'kepler.gl/components/common/icons';
 import ItemSelector from 'kepler.gl/components/common/item-selector/item-selector';
+import {Scene} from 'components/scene'; 
 
 const DEFAULT_BUTTON_HEIGHT = '32px';
 const DEFAULT_BUTTON_WIDTH = '64px';
@@ -67,6 +68,9 @@ const StyledValueCell = styled.div`
 
 const PanelBodyInner = styled.div`
   padding: 0 ${DEFAULT_PADDING};
+  display: grid;
+  grid-template-columns: 480px auto;
+  grid-column-gap: 20px;
 `;
 
 const InputGrid = styled.div`
@@ -79,8 +83,12 @@ const InputGrid = styled.div`
   grid-row-gap: ${DEFAULT_ROW_GAP};
 `;
 
-const PanelBody = () => (
+const PanelBody = ({props}) => (
   <PanelBodyInner className="render-settings-panel__body">
+    <div  style={{width: '100%', height: "100%"}}>
+       <Scene prop={props}/> 
+    </div>
+    <div>
     <StyledTitle className="render-settings-panel__title">Export Video</StyledTitle>
     <StyledSection>Video Effects</StyledSection>
     <InputGrid rows={2}>
@@ -134,6 +142,7 @@ const PanelBody = () => (
       <StyledLabelCell>File Size</StyledLabelCell> {/* TODO add functionality  */}
       <StyledValueCell>36 MB</StyledValueCell>
     </InputGrid>
+    </div>
   </PanelBodyInner>
 );
 
@@ -187,17 +196,17 @@ const Panel = styled.div`
 
 class RenderSettingsPanel extends Component {
   static defaultProps = {
-    settingsWidth: 480,
+    settingsWidth: 980,
     buttonHeight: '16px'
   };
-
+// TODO: Fix the layout
   render() {
     const {buttonHeight, settingsWidth, handleClose} = this.props;
     console.log("props from render setting panel", this.props.prop)
     return (
-      <Panel settingsWidth={settingsWidth} className="render-settings-panel">
+      <Panel settingsWidth={settingsWidth} className="render-settings-panel" >  
         <PanelClose buttonHeight={buttonHeight} handleClose={handleClose}/>
-        <PanelBody />
+        <PanelBody props={this.props.prop}/>
         <PanelFooter />
       </Panel>
     );

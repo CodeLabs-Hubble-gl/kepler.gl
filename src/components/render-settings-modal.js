@@ -5,7 +5,7 @@ import {createSelector} from 'reselect';
 import RenderSettingsPanel from './render-settings-panel';
 import Modal from 'react-modal';
 import {DIMENSIONS} from 'kepler.gl/constants/default-settings';
-import {Scene} from 'components/hubble-export'; 
+
 
 const ModalContainer = styled.div`
   position: relative;
@@ -107,8 +107,8 @@ class RenderSettingsModal extends Component {
             }}
           >
             
-            <Scene prop={this.props.prop}/>
-            <RenderSettingsPanel handleClose={() => {handleClose() }}/>
+          
+            <RenderSettingsPanel handleClose={() => {handleClose() }} prop={this.props.prop}/>
            
             {/* <RenderSettingsPanel /> */}
           </Modal>
