@@ -62,32 +62,6 @@ const TRANSITION_DURATION = 0;
 
 const Attribution = () => (
   <StyledAttrbution>
-<<<<<<< HEAD
-    <div className="attrition-logo">
-      Basemap by:
-      <a
-        className="mapboxgl-ctrl-logo"
-        target="_blank"
-        rel="noopener noreferrer"
-        href="https://www.mapbox.com/"
-        aria-label="Mapbox logo"
-      />
-    </div>
-    <div>
-      <a href="https://kepler.gl/policy/" target="_blank" rel="noopener noreferrer">
-        © kepler.gl |{' '}
-      </a>
-      <a href="https://www.mapbox.com/about/maps/" target="_blank" rel="noopener noreferrer">
-        © Mapbox |{' '}
-      </a>
-      <a href="http://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">
-        © OpenStreetMap |{' '}
-      </a>
-      <a href="https://www.mapbox.com/map-feedback/" target="_blank" rel="noopener noreferrer">
-        <strong>Improve this map</strong>
-      </a>
-    </div>
-=======
     <a href="https://kepler.gl/policy/" target="_blank" rel="noopener noreferrer">
       © kepler.gl|{' '}
     </a>
@@ -100,7 +74,6 @@ const Attribution = () => (
     <a href="https://www.mapbox.com/map-feedback/" target="_blank" rel="noopener noreferrer">
       <strong>Improve this map</strong>
     </a>
->>>>>>> Integration of deckgl Canvas with modal
   </StyledAttrbution>
 );
 
@@ -526,12 +499,7 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
       };
 
       const isEdit = uiState.mapControls.mapDraw.active;
-<<<<<<< HEAD
-      const hasGeocoderLayer = layers.find(l => l.id === GEOCODER_LAYER_ID);
-
-=======
      
->>>>>>> Integration of deckgl Canvas with modal
       return (
       
         <StyledMapContainer style={MAP_STYLE.container}>
