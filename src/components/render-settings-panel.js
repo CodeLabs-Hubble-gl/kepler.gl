@@ -10,7 +10,82 @@ const DEFAULT_BUTTON_WIDTH = '64px';
 const DEFAULT_PADDING = '32px';
 const DEFAULT_ROW_GAP = '16px';
 
-function nop() {}
+//Testing
+import {DeckScene, CameraKeyframes} from '@hubble.gl/core';
+import {easing} from 'popmotion';
+import {DeckAdapter} from 'hubble.gl';
+
+function sceneBuilder(animationLoop) {
+  const data = {};
+  const keyframes = {
+    camera: new CameraKeyframes({
+      timings: [0, 3000],
+      keyframes: [
+        {
+          longitude: 0,
+          latitude: 11,
+          zoom: 2,
+          pitch: 0,
+          bearing: 0
+        },
+        {
+          longitude: 0,
+          latitude: 33,
+          zoom: 3,
+          bearing: 90,
+          pitch: 50
+        }
+      ],
+      easings: [easing.easeInOut]
+    })
+  };
+  animationLoop.timeline.attachAnimation(keyframes.camera);
+
+  // TODO: Figure out how to set up the size 
+  return new DeckScene({
+    animationLoop,
+    keyframes,
+    lengthMs: 5000,
+    data,
+   width: 480,
+   height: 460
+  });
+}
+
+const encoderSettings = {
+  framerate: 30,
+  webm: {
+    quality: 0.8
+  },
+  jpeg: {
+    quality: 0.8
+  },
+  gif: {
+    sampleInterval: 1000
+  }
+};
+
+var _core = require("@hubble.gl/core");
+const adapter = new DeckAdapter(sceneBuilder);
+
+function preview() {
+  adapter.render(_core.PreviewEncoder, encoderSettings, ()=>{});
+}
+
+// TODO:
+
+// Changes Timestamp function
+// Camera function (preset keyframes)
+// File Name function
+// MediaType function
+// Quality function
+// Set Duration function
+// Calculate File Size function
+// Render Function
+
+function nop(){
+
+}
 
 const IconButton = styled(Button)`
   padding: 0;
@@ -84,9 +159,11 @@ const InputGrid = styled.div`
 `;
 
 const PanelBody = ({props}) => (
+
   <PanelBodyInner className="render-settings-panel__body">
+   
     <div  style={{width: '100%', height: "100%"}}>
-       <Scene prop={props}/> 
+       <Scene prop={props} sceneBuilder={sceneBuilder} encoderSettings={encoderSettings} adapter={adapter} /*ref={sce}*//> 
     </div>
     <div>
     <StyledTitle className="render-settings-panel__title">Export Video</StyledTitle>
@@ -104,9 +181,9 @@ const PanelBody = ({props}) => (
         selectedItems={['None']}
         options={[
           'None',
-          'Oribit (90º)',
-          'Oribit (180º)',
-          'Oribit (360º)',
+          'Orbit (90º)',
+          'Orbit (180º)',
+          'Orbit (360º)',
           'North to South',
           'South to North',
           'East to West',
@@ -164,7 +241,7 @@ const PanelFooter = () => (
       height={DEFAULT_BUTTON_HEIGHT}
       secondary
       className={'render-settings-button'}
-      onClick={nop}
+      onClick={preview}
     >
       Preview
     </Button>

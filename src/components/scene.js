@@ -14,7 +14,8 @@ import {DeckAdapter} from 'hubble.gl';
 
 
 // Hubble Part (Maybe we should get this in a different file or put everything on a folder)
-function sceneBuilder(animationLoop) {
+// Question: Does is make sense to have the sceneBuilder and enconderSettings in RenderSettingsPanel?
+/*function sceneBuilder(animationLoop) {
     const data = {};
     const keyframes = {
       camera: new CameraKeyframes({
@@ -40,17 +41,18 @@ function sceneBuilder(animationLoop) {
     };
     animationLoop.timeline.attachAnimation(keyframes.camera);
   
+    // TODO: Figure out how to set up the size 
     return new DeckScene({
       animationLoop,
       keyframes,
       lengthMs: 5000,
       data,
-     width: 852,
-     height: 480
+     width: 480,
+     height: 460
     });
-  }
+  }*/
 
-  const encoderSettings = {
+ /* const encoderSettings = {
     framerate: 30,
     webm: {
       quality: 0.8
@@ -61,9 +63,8 @@ function sceneBuilder(animationLoop) {
     gif: {
       sampleInterval: 1000
     }
-  };
+  };*/
 
-const adapter = new DeckAdapter(sceneBuilder);
 
 const TRANSITION_DURATION = 0;
 
@@ -73,6 +74,7 @@ export class Scene extends Component {
         super(props);
    this.prop = this.props.prop;
    
+   //this.adapter = new DeckAdapter(this.props.sceneBuilder);
       }
 
   _renderLayer = (overlays, idx) => {
@@ -176,7 +178,7 @@ export class Scene extends Component {
                 /* onBeforeRender={this._onBeforeRender} // Not yet
                       onHover={visStateActions.onLayerHover} // Not yet
                       onClick={visStateActions.onLayerClick}*/ // Not yet
-                {...adapter.getProps(this.deckgl, () => {}, () => {this.forceUpdate()})}
+                {...this.props.adapter.getProps(this.deckgl, () => {}, () => {this.forceUpdate()})}
               >
             <MapboxGLMap // Maybe be missing Mapbox overlays
                   {...mapProps}
@@ -189,8 +191,8 @@ export class Scene extends Component {
               </DeckGL>
               <div style={{position: 'absolute'}}>
                 <BasicControls
-                  adapter={adapter}
-                  encoderSettings={encoderSettings}
+                  adapter={this.props.adapter}
+                  encoderSettings={this.props.encoderSettings}
                   setBusy={()=>{}}
                 />
               </div>
