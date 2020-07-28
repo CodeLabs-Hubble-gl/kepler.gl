@@ -320,19 +320,23 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
           {hasTooltip && (
             <MapPopover
               {...pinnedPosition}
-              {...commonProp}
               layerHoverProp={layerPinnedProp}
               coordinate={interactionConfig.coordinate.enabled && (pinned || {}).coordinate}
               frozen={Boolean(hasTooltip)}
+              onClose={this._onCloseMapPopover}
+              mapW={mapState.width}
+              mapH={mapState.height}
               isBase={compareMode}
             />
           )}
           {hasComparisonTooltip && (
             <MapPopover
               {...position}
-              {...commonProp}
               layerHoverProp={layerHoverProp}
               coordinate={interactionConfig.coordinate.enabled && coordinate}
+              onClose={this._onCloseMapPopover}
+              mapW={mapState.width}
+              mapH={mapState.height}
             />
           )}
         </div>
@@ -394,6 +398,9 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
       } = this.props;
 
       let deckGlLayers = [];
+
+     
+
       // wait until data is ready before render data layers
       if (layerData && layerData.length) {
         // last layer render first
@@ -419,6 +426,7 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
           })
         );
       }
+     
 
       return (
         <DeckGL
@@ -470,6 +478,7 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
     };
 
     render() {
+    
       const {
         mapState,
         mapStyle,
@@ -489,7 +498,11 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
         index
       } = this.props;
 
+
+
       const layersToRender = this.layersToRenderSelector(this.props);
+
+    
 
       if (!mapStyle.bottomMapStyle) {
         // style not yet loaded
@@ -542,7 +555,7 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
             mapStyle={mapStyle.bottomMapStyle}
             getCursor={this.props.hoverInfo ? () => 'pointer' : undefined}
             transitionDuration={TRANSITION_DURATION}
-            onMouseMove={this.props.visStateActions.onMouseMove}
+            onMouseMove={this.props.visStateActions.onMouseMove}*/
           >
          
 
