@@ -26,6 +26,7 @@ import RenderSettingsModal from './render-settings-modal';
 import {Button} from 'components/common/styled-components';
 import {theme} from '../styles';
 
+import {toggleHubbleExportModal} from 'kepler.gl/actions';
 
 // TODO this isn't DRY. Comes from https://github.com/keplergl/kepler.gl/blob/995024e86880fefb0624af4ed1e98d3879558336/src/components/kepler-gl.js
 function mapStateToProps(state = {}, props) {
@@ -36,7 +37,6 @@ function mapStateToProps(state = {}, props) {
       mapState: state.mapState,
       uiState: state.uiState,
       providerState: state.providerState
-    //   isOpen: state.isOpen TODO
     };
 }
 
@@ -44,8 +44,9 @@ function makeMapDispatchToProps() {
     // const getActionCreators = makeGetActionCreators();
     const mapDispatchToProps = (dispatch, ownProps) => {
     //   const groupedActionCreators = getActionCreators(dispatch, ownProps);
-  
+      
       return {
+        ...toggleHubbleExportModal(),
         //   TODO Put action creator and return here
         // ...groupedActionCreators,
         dispatch
@@ -65,9 +66,10 @@ class HubbleExport extends Component {
     handleClose() {this.setState({isOpen: false})} // X button in Modal UI was clicked
 
     handleExport() { // Export button in Kepler UI was clicked
-        this.setState(state => ({
-            isOpen: true
-          }));
+        this.props.toggleHubbleExportModal({hubbleExportModalOpen: true})
+        // this.setState(state => ({
+        //     isOpen: true
+        //   }));
         // stop rendering in bg
         // setState
         // pop up modal if isOpen. If false, closes modal TODO put function into render
