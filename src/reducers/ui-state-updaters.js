@@ -749,7 +749,9 @@ export const startSaveStorage = (state, {payload: mapSaved}) => {
  * @type {typeof import('./ui-state-updaters').toggleHubbleExportModalUpdater}
  * @public
  */
-export const toggleHubbleExportModalUpdater = (state, {payload: {isOpen}}) => ({
+export const toggleHubbleExportModalUpdater = (state, {payload: {isOpen}}) => (
+  console.log("toggleHubbleExportModalUpdater reached"),
+  {
   ...state,
-  hubbleExportModalOpen: isOpen
+  hubbleExportModalOpen: isOpen,
 });
