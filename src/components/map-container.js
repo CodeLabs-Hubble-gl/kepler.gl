@@ -518,7 +518,7 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
             mapStyle={mapStyle.bottomMapStyle}
             getCursor={this.props.hoverInfo ? () => 'pointer' : undefined}
             transitionDuration={TRANSITION_DURATION}
-            onMouseMove={this.props.visStateActions.onMouseMove}
+            onMouseMove={this.props.visStateActions.onMouseMove} 
           >
          
 

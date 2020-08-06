@@ -173,9 +173,9 @@ export class Scene extends Component {
             .reduce(this._renderLayer, []);
         }
 
-        deckGlLayers[2] = deckGlLayers[1];
+    /*    deckGlLayers[2] = deckGlLayers[1];
         deckGlLayers[1] = deckGlLayers[0]
-        deckGlLayers[0] = tileLayer;
+        deckGlLayers[0] = tileLayer; */
         
 
         
@@ -193,7 +193,7 @@ export class Scene extends Component {
          const style = {
             position: 'relative'
           }
-          console.log("tilelayer ",tileLayer);
+          console.log("adapter from scene ", this.props.adapter);
      
         return (
             <div style={{width: '480px', height: "460px", position: 'relative'}}>
@@ -211,7 +211,14 @@ export class Scene extends Component {
                 {...this.props.adapter.getProps(this.deckgl, () => {}, () => {this.forceUpdate()})}
               >
                  
-                
+                 <MapboxGLMap // Maybe be missing Mapbox overlays
+                  {...mapProps}
+                  key="bottom"
+                  ref={this._setMapboxMap}
+                  mapStyle={mapStyle.bottomMapStyle}
+                  getCursor={this.props.hoverInfo ? () => 'pointer' : undefined}
+                  transitionDuration={TRANSITION_DURATION}
+                ></MapboxGLMap>
       
               </DeckGL>  
             </div>
