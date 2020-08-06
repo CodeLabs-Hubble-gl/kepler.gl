@@ -26,258 +26,18 @@ import ItemSelector from 'kepler.gl/components/common/item-selector/item-selecto
 import {Scene} from 'components/scene'; 
 
 import {
-  WebMEncoder,
-  JPEGSequenceEncoder,
-  PNGSequenceEncoder,
-  PreviewEncoder,
-  GifEncoder
-} from '@hubble.gl/core';
-import {DeckScene, CameraKeyframes} from '@hubble.gl/core';
-import {easing} from 'popmotion';
-import {DeckAdapter, ScatterPlotLayerKeyframes} from 'hubble.gl';
+  SettingsController,
+  preview,
+  setFileNameDeckAdapter,
+  render
+  } from 'components/render/settings-controller';
 
-import {DEFAULT_TIME_FORMAT} from 'constants';
-import moment from 'moment';
+import {setKeyframes} from 'components/render/keyframes';
 
 const DEFAULT_BUTTON_HEIGHT = '32px';
 const DEFAULT_BUTTON_WIDTH = '64px';
 const DEFAULT_PADDING = '32px';
 const DEFAULT_ROW_GAP = '16px';
-
-//const keyframes = setKeyframes(camera);
-let adapter = new DeckAdapter(sceneBuilder);
-let mapdataGlobal = null;
-
-function sceneBuilder(animationLoop) {
-  const data = {};
-  const keyframes = {
-    camera: new CameraKeyframes({
-      timings: [0, 1000],
-      keyframes: [
-        {
-          longitude: mapdataGlobal.mapState.longitude,
-          latitude: mapdataGlobal.mapState.latitude,
-          zoom: mapdataGlobal.mapState.zoom,
-          pitch: 0,
-          bearing: 0
-        },
-        {
-          longitude: mapdataGlobal.mapState.longitude,
-          latitude: mapdataGlobal.mapState.latitude,
-          zoom: mapdataGlobal.mapState.zoom,
-          bearing: 0,
-          pitch: 0
-        }
-      ],
-      easings: [easing.easeInOut]
-    })
-  };
-  animationLoop.timeline.attachAnimation(keyframes.camera);
-
-  // TODO: Figure out how to set up the size 
-  return new DeckScene({
-    animationLoop,
-    keyframes,
-    lengthMs: 1000,
-    data,
-   width: 480,
-   height: 460
-  });
-}
-
-function setKeyframes(cameraType){
-  adapter.scene.keyframes.camera._lastTime = 0;
-  adapter.scene.keyframes.camera.factor = 0;
-
-  // I'm not sure
-  adapter.scene.keyframes.camera.values[0].latitude = mapdataGlobal.mapState.latitude;
-  adapter.scene.keyframes.camera.values[0].longitude = mapdataGlobal.mapState.longitude;
-  adapter.scene.keyframes.camera.values[1].latitude = mapdataGlobal.mapState.latitude;
-  adapter.scene.keyframes.camera.values[1].longitude = mapdataGlobal.mapState.longitude;
-  adapter.scene.keyframes.camera.values[0].zoom = mapdataGlobal.mapState.zoom;
-  adapter.scene.keyframes.camera.values[1].zoom = mapdataGlobal.mapState.zoom;
-  
-      if(cameraType === 'Orbit (90º)'){
-          // How to reset the camera to its initial position?
-          adapter.scene.keyframes.camera.values[0].bearing = 0;
-          adapter.scene.keyframes.camera.values[0].latitude = mapdataGlobal.mapState.latitude;
-          adapter.scene.keyframes.camera.values[0].longitude = mapdataGlobal.mapState.longitude;
-          adapter.scene.keyframes.camera.values[0].pitch = 0;
-          adapter.scene.keyframes.camera.values[0].zoom = mapdataGlobal.mapState.zoom;
-  
-          adapter.scene.keyframes.camera.values[1].bearing = 90;
-          adapter.scene.keyframes.camera.values[1].latitude = mapdataGlobal.mapState.latitude;
-          adapter.scene.keyframes.camera.values[1].longitude = mapdataGlobal.mapState.longitude;
-          adapter.scene.keyframes.camera.values[1].pitch = 0;
-          adapter.scene.keyframes.camera.values[1].zoom = mapdataGlobal.mapState.zoom;
-      }else if(cameraType === 'Orbit (180º)'){
-        adapter.scene.keyframes.camera.values[0].bearing = 0;
-        adapter.scene.keyframes.camera.values[0].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[0].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[0].pitch = 0;
-        adapter.scene.keyframes.camera.values[0].zoom = mapdataGlobal.mapState.zoom;
-
-        adapter.scene.keyframes.camera.values[1].bearing = 180;
-        adapter.scene.keyframes.camera.values[1].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[1].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[1].pitch = 0;
-        adapter.scene.keyframes.camera.values[1].zoom = mapdataGlobal.mapState.zoom;
-      }else if(cameraType === 'Orbit (360º)'){
-        adapter.scene.keyframes.camera.values[0].bearing = 0;
-        adapter.scene.keyframes.camera.values[0].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[0].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[0].pitch = 0;
-        adapter.scene.keyframes.camera.values[0].zoom = mapdataGlobal.mapState.zoom;
-
-        adapter.scene.keyframes.camera.values[1].bearing = 360;
-        adapter.scene.keyframes.camera.values[1].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[1].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[1].pitch = 0;
-        adapter.scene.keyframes.camera.values[1].zoom = mapdataGlobal.mapState.zoom;
-      }else if(cameraType === 'North to South'){
-        adapter.scene.keyframes.camera.values[0].bearing = 0;
-        adapter.scene.keyframes.camera.values[0].latitude = mapdataGlobal.mapState.latitude + 25;
-        adapter.scene.keyframes.camera.values[0].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[0].pitch = 0;
-        adapter.scene.keyframes.camera.values[0].zoom = mapdataGlobal.mapState.zoom;
-
-        adapter.scene.keyframes.camera.values[1].bearing = 0;
-        adapter.scene.keyframes.camera.values[1].latitude = mapdataGlobal.mapState.latitude - 25;
-        adapter.scene.keyframes.camera.values[1].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[1].pitch = 0;
-        adapter.scene.keyframes.camera.values[1].zoom = mapdataGlobal.mapState.zoom;
-      }else if(cameraType === 'South to North'){
-        adapter.scene.keyframes.camera.values[0].bearing = 0;
-        adapter.scene.keyframes.camera.values[0].latitude = mapdataGlobal.mapState.latitude - 25;
-        adapter.scene.keyframes.camera.values[0].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[0].pitch = 0;
-        adapter.scene.keyframes.camera.values[0].zoom = mapdataGlobal.mapState.zoom;
-
-        adapter.scene.keyframes.camera.values[1].bearing = 0;
-        adapter.scene.keyframes.camera.values[1].latitude = mapdataGlobal.mapState.latitude + 25;
-        adapter.scene.keyframes.camera.values[1].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[1].pitch = 0;
-        adapter.scene.keyframes.camera.values[1].zoom = mapdataGlobal.mapState.zoom;
-      }else if(cameraType === 'East to West'){
-        adapter.scene.keyframes.camera.values[0].bearing = 0;
-        adapter.scene.keyframes.camera.values[0].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[0].longitude = mapdataGlobal.mapState.longitude + 25;
-        adapter.scene.keyframes.camera.values[0].pitch = 0;
-        adapter.scene.keyframes.camera.values[0].zoom = mapdataGlobal.mapState.zoom;
-
-        adapter.scene.keyframes.camera.values[1].bearing = 0;
-        adapter.scene.keyframes.camera.values[1].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[1].longitude = mapdataGlobal.mapState.longitude - 25;
-        adapter.scene.keyframes.camera.values[1].pitch = 0;
-        adapter.scene.keyframes.camera.values[1].zoom = mapdataGlobal.mapState.zoom;
-      }else if(cameraType === 'West to East'){
-        adapter.scene.keyframes.camera.values[0].bearing = 0;
-        adapter.scene.keyframes.camera.values[0].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[0].longitude = mapdataGlobal.mapState.longitude - 25;
-        adapter.scene.keyframes.camera.values[0].pitch = 0;
-        adapter.scene.keyframes.camera.values[0].zoom = mapdataGlobal.mapState.zoom;
-
-        adapter.scene.keyframes.camera.values[1].bearing = 0;
-        adapter.scene.keyframes.camera.values[1].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[1].longitude = mapdataGlobal.mapState.longitude + 25;
-        adapter.scene.keyframes.camera.values[1].pitch = 0;
-        adapter.scene.keyframes.camera.values[0].zoom = mapdataGlobal.mapState.zoom;
-      }else if(cameraType === 'Zoom Out'){
-        adapter.scene.keyframes.camera.values[0].bearing = 0;
-        adapter.scene.keyframes.camera.values[0].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[0].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[0].pitch = 0;
-        adapter.scene.keyframes.camera.values[0].zoom = mapdataGlobal.mapState.zoom;
-
-        adapter.scene.keyframes.camera.values[1].bearing = 0;
-        adapter.scene.keyframes.camera.values[1].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[1].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[1].pitch = 0;
-        adapter.scene.keyframes.camera.values[1].zoom = mapdataGlobal.mapState.zoom - 2;
-      }else if(cameraType === 'Zoom In'){
-        adapter.scene.keyframes.camera.values[0].bearing = 0;
-        adapter.scene.keyframes.camera.values[0].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[0].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[0].pitch = 0;
-        adapter.scene.keyframes.camera.values[0].zoom = mapdataGlobal.mapState.zoom;
-
-        adapter.scene.keyframes.camera.values[1].bearing = 0;
-        adapter.scene.keyframes.camera.values[1].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[1].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[1].pitch = 0;
-        adapter.scene.keyframes.camera.values[1].zoom = mapdataGlobal.mapState.zoom + 2;
-      }      
-     console.log("adapter", adapter);
-}
-
-const encoderSettings = {
-  framerate: 30,
-  webm: {
-    quality: 0.8
-  },
-  jpeg: {
-    quality: 0.8
-  },
-  gif: {
-    sampleInterval: 1000
-  },
-  webm:{
-    quality: 1.5
-  },
-  filename: "Default Video Name" + " " + moment().format(DEFAULT_TIME_FORMAT).toString()
-};
-
-function preview() {
-  adapter.render(PreviewEncoder, encoderSettings, ()=>{});
-}
-
-function setFileNameDeckAdapter(name){
-  console.log(mapdataGlobal);
-  encoderSettings.filename = name + " " + moment().format(DEFAULT_TIME_FORMAT).toString();
-}
-
-/*function setResolution(resolution){
-  if(resolution === 'Good (540p)'){
-    adapter.scene.width = 960;
-    adapter.scene.height = 540;
-  }else if(resolution === 'High (720p)'){
-    adapter.scene.width = 1280;
-    adapter.scene.height = 720;
-  }else if(resolution === 'Highest (1080p)'){
-    adapter.scene.width = 1920;
-    adapter.scene.height = 1080;
-  }
-}*/
-
-// This is temporary, for showing purposes on Friday, resolution settings should be in a separate function, 
-// only because we are against the clock. 
-// TODO: refactor
-function render(settingsdata){
-
-  //  setResolution(settingsdata.resolution); // Remove this
-
-    if (settingsdata.mediaType === 'WebM Video') {
-      adapter.render(WebMEncoder, encoderSettings, () => {});
-    } else if (settingsdata.mediaType === 'PNG Sequence') {
-      adapter.render(PNGSequenceEncoder, encoderSettings, () => {});
-    } else if (settingsdata.mediaType === 'JPEG Sequence') {
-      adapter.render(JPEGSequenceEncoder, encoderSettings, () => {});
-    } 
-  // preview();
-  }
-
-// TODO:
-
-// Changes Timestamp function
-// Camera function (preset keyframes) DONE
-// File Name function DONE
-// MediaType function DONE
-// Quality function
-// Set Duration function
-// Calculate File Size function
-// Render Function DONE
-
-function nop() {}
 
 const IconButton = styled(Button)`
   padding: 0;
@@ -349,20 +109,21 @@ const InputGrid = styled.div`
   grid-row-gap: ${DEFAULT_ROW_GAP};
 `;
 
-const PanelBody = ({mapData, setMediaType, setCamera, setFileName/*, setQuality*/, settingsData}) => (
+const PanelBody = ({mapData, setMediaType, setCamera, setFileName, setQuality, setTimeStamps, settingsData}) => (
   <PanelBodyInner className="render-settings-panel__body"> 
      <div style={{width: "480px", height: "460px"}}>
-       <Scene mapData={mapData} encoderSettings={encoderSettings} adapter={adapter} /*ref={sce}*//> 
+       <Scene mapData={mapData} adapter={settingsData.adapter}/> 
     </div>
     <div>
     <StyledSection>Video Effects</StyledSection>
     <InputGrid rows={2}>
       <StyledLabelCell>Timestamp</StyledLabelCell> {/* TODO add functionality  */}
       <ItemSelector
-        selectedItems={['None']}
+        selectedItems={settingsData.time}
         options={['None', 'White', 'Black']}
         multiSelect={false}
         searchable={false}
+        onChange={setTimeStamps}
       />
       <StyledLabelCell>Camera</StyledLabelCell> {/* TODO add functionality */}
       <ItemSelector
@@ -402,7 +163,7 @@ const PanelBody = ({mapData, setMediaType, setCamera, setFileName/*, setQuality*
         options={['Good (540p)', 'High (720p)', 'Highest (1080p)']}
         multiSelect={false}
         searchable={false}
-       /* onChange={setQuality}*/
+        onChange={setQuality}
       />
     </InputGrid>
     <InputGrid style={{marginTop: DEFAULT_ROW_GAP}} rows={2} rowHeight="18px">
@@ -426,14 +187,14 @@ const ButtonGroup = styled.div`
   display: flex;
 `;
 
-const PanelFooter = ({handleClose, settingsData}) => (
+const PanelFooter = ({handleClose, settingsData, preview}) => (
   <PanelFooterInner className="render-settings-panel__footer">
     <Button
       width={DEFAULT_BUTTON_WIDTH}
       height={DEFAULT_BUTTON_HEIGHT}
       secondary
       className={'render-settings-button'}
-      onClick={preview}
+      onClick={() => (preview(settingsData.adapter))}
     >
       Preview
     </Button>
@@ -451,7 +212,7 @@ const PanelFooter = ({handleClose, settingsData}) => (
         width={DEFAULT_BUTTON_WIDTH}
         height={DEFAULT_BUTTON_HEIGHT}
         className={'render-settings-button'}
-        onClick={() => render(settingsData)}
+        onClick={() => render(settingsData, settingsData.adapter)}
       >
         Render
       </Button>
@@ -471,19 +232,24 @@ class RenderSettingsPanel extends Component {
       mediaType: "WebM Video",
       camera: "None",
       fileName: "Video Name",
-    //  quality: "High (720p)"
+      quality: "High (720p)",
+      timestamps: "None"
     };
 
     this.setMediaTypeState = this.setMediaTypeState.bind(this);
     this.setCamera = this.setCamera.bind(this);
     this.setFileName = this.setFileName.bind(this);
-   // this.setQuality = this.setQuality.bind(this);
-   mapdataGlobal = this.props.mapData;
+    this.setQuality = this.setQuality.bind(this);
+    this.setTimeStamps = this.setTimeStamps.bind(this);
+ 
+    this.mapDataGlobal = this.props.mapData;
+    this.settingsController = <SettingsController />;
+
   }
 
   static defaultProps = {
     settingsWidth: 980,
-    buttonHeight: '16px'
+    buttonHeight: '16px',
   };
 
   setMediaTypeState(media){
@@ -495,7 +261,7 @@ class RenderSettingsPanel extends Component {
       this.setState({
         camera: option
       });
-      setKeyframes(option);
+      setKeyframes(option, this.settingsController.props.adapter, this.mapdataGlobal);
   }
   setFileName(name){
     this.setState({
@@ -503,15 +269,20 @@ class RenderSettingsPanel extends Component {
     });
     setFileNameDeckAdapter(name.target.value);
   }
- /* setQuality(resolution){
+  setQuality(resolution){
     this.setState({
       quality: resolution
     });
-    setResolution(resolution);
-  }*/
-
-  
+  }
+  setTimeStamps(time){
+    this.setState({
+      timestamps: time
+    });
+  }
+ 
   render() {
+
+    const adapter = this.settingsController.props.adapter;
 
     const {buttonHeight, settingsWidth, handleClose} = this.props;
     const settingsData = {
@@ -519,8 +290,10 @@ class RenderSettingsPanel extends Component {
       camera : this.state.camera,
       fileName: this.state.fileName,
       resolution: this.state.quality,
+      time: this.state.timestamps,
+      adapter: adapter
     }
-   
+
     return (
     
       <Panel settingsWidth={settingsWidth} className="render-settings-panel">
@@ -533,12 +306,14 @@ class RenderSettingsPanel extends Component {
             setMediaType={this.setMediaTypeState} 
             setCamera={this.setCamera}
             setFileName={this.setFileName}
-          //  setQuality={this.setQuality}
+            setQuality={this.setQuality}
+            setTimeStamps={this.setTimeStamps}
             settingsData={settingsData}
             />
         <PanelFooter 
             handleClose={handleClose} 
             settingsData = {settingsData}
+            preview={preview}
             /> {/* handleClose for Cancel button */}
       </Panel>
     );
