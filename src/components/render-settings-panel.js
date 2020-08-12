@@ -48,31 +48,33 @@ const DEFAULT_ROW_GAP = '16px';
 let adapter = new DeckAdapter(sceneBuilder);
 let mapdataGlobal = null;
 
+// @Chris I think this has to be done this way since adapter eventually gets used on many elements outside of the class
 function sceneBuilder(animationLoop) {
   const data = {};
   // PSEUDO calls helper function to create new keyframes
-  const keyframes = {
-    camera: new CameraKeyframes({
-      timings: [0, 1000],
-      keyframes: [
-        {
-          longitude: mapdataGlobal.mapState.longitude,
-          latitude: mapdataGlobal.mapState.latitude,
-          zoom: mapdataGlobal.mapState.zoom,
-          pitch: 0,
-          bearing: 0
-        },
-        {
-          longitude: mapdataGlobal.mapState.longitude,
-          latitude: mapdataGlobal.mapState.latitude,
-          zoom: mapdataGlobal.mapState.zoom,
-          bearing: 0,
-          pitch: 0
-        }
-      ],
-      easings: [easing.easeInOut]
-    })
-  };
+  const keyframes = RenderSettingsPanel.createKeyframe()
+  // {
+    // camera: new CameraKeyframes({
+    //   timings: [0, 1000],
+    //   keyframes: [
+    //     {
+    //       longitude: mapdataGlobal.mapState.longitude,
+    //       latitude: mapdataGlobal.mapState.latitude,
+    //       zoom: mapdataGlobal.mapState.zoom,
+    //       pitch: 0,
+    //       bearing: 0
+    //     },
+    //     {
+    //       longitude: mapdataGlobal.mapState.longitude,
+    //       latitude: mapdataGlobal.mapState.latitude,
+    //       zoom: mapdataGlobal.mapState.zoom,
+    //       bearing: 0,
+    //       pitch: 0
+    //     }
+    //   ],
+    //   easings: [easing.easeInOut]
+    // })
+  // };
   animationLoop.timeline.attachAnimation(keyframes.camera);
 
   // TODO: Figure out how to set up the size 
@@ -84,134 +86,6 @@ function sceneBuilder(animationLoop) {
    width: 480,
    height: 460
   });
-}
-
-// Attach/detach keyframes
-function setKeyframes(cameraType){
-  adapter.scene.keyframes.camera._lastTime = 0;
-  adapter.scene.keyframes.camera.factor = 0;
-
-  // I'm not sure
-  adapter.scene.keyframes.camera.values[0].latitude = mapdataGlobal.mapState.latitude;
-  adapter.scene.keyframes.camera.values[0].longitude = mapdataGlobal.mapState.longitude;
-  adapter.scene.keyframes.camera.values[1].latitude = mapdataGlobal.mapState.latitude;
-  adapter.scene.keyframes.camera.values[1].longitude = mapdataGlobal.mapState.longitude;
-  adapter.scene.keyframes.camera.values[0].zoom = mapdataGlobal.mapState.zoom;
-  adapter.scene.keyframes.camera.values[1].zoom = mapdataGlobal.mapState.zoom;
-  
-      if(cameraType === 'Orbit (90º)'){
-          // How to reset the camera to its initial position?
-          adapter.scene.keyframes.camera.values[0].bearing = 0;
-          adapter.scene.keyframes.camera.values[0].latitude = mapdataGlobal.mapState.latitude;
-          adapter.scene.keyframes.camera.values[0].longitude = mapdataGlobal.mapState.longitude;
-          adapter.scene.keyframes.camera.values[0].pitch = 0;
-          adapter.scene.keyframes.camera.values[0].zoom = mapdataGlobal.mapState.zoom;
-  
-          adapter.scene.keyframes.camera.values[1].bearing = 90;
-          adapter.scene.keyframes.camera.values[1].latitude = mapdataGlobal.mapState.latitude;
-          adapter.scene.keyframes.camera.values[1].longitude = mapdataGlobal.mapState.longitude;
-          adapter.scene.keyframes.camera.values[1].pitch = 0;
-          adapter.scene.keyframes.camera.values[1].zoom = mapdataGlobal.mapState.zoom;
-      }else if(cameraType === 'Orbit (180º)'){
-        adapter.scene.keyframes.camera.values[0].bearing = 0;
-        adapter.scene.keyframes.camera.values[0].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[0].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[0].pitch = 0;
-        adapter.scene.keyframes.camera.values[0].zoom = mapdataGlobal.mapState.zoom;
-
-        adapter.scene.keyframes.camera.values[1].bearing = 180;
-        adapter.scene.keyframes.camera.values[1].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[1].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[1].pitch = 0;
-        adapter.scene.keyframes.camera.values[1].zoom = mapdataGlobal.mapState.zoom;
-      }else if(cameraType === 'Orbit (360º)'){
-        adapter.scene.keyframes.camera.values[0].bearing = 0;
-        adapter.scene.keyframes.camera.values[0].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[0].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[0].pitch = 0;
-        adapter.scene.keyframes.camera.values[0].zoom = mapdataGlobal.mapState.zoom;
-
-        adapter.scene.keyframes.camera.values[1].bearing = 360;
-        adapter.scene.keyframes.camera.values[1].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[1].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[1].pitch = 0;
-        adapter.scene.keyframes.camera.values[1].zoom = mapdataGlobal.mapState.zoom;
-      }else if(cameraType === 'North to South'){
-        adapter.scene.keyframes.camera.values[0].bearing = 0;
-        adapter.scene.keyframes.camera.values[0].latitude = mapdataGlobal.mapState.latitude + 25;
-        adapter.scene.keyframes.camera.values[0].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[0].pitch = 0;
-        adapter.scene.keyframes.camera.values[0].zoom = mapdataGlobal.mapState.zoom;
-
-        adapter.scene.keyframes.camera.values[1].bearing = 0;
-        adapter.scene.keyframes.camera.values[1].latitude = mapdataGlobal.mapState.latitude - 25;
-        adapter.scene.keyframes.camera.values[1].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[1].pitch = 0;
-        adapter.scene.keyframes.camera.values[1].zoom = mapdataGlobal.mapState.zoom;
-      }else if(cameraType === 'South to North'){
-        adapter.scene.keyframes.camera.values[0].bearing = 0;
-        adapter.scene.keyframes.camera.values[0].latitude = mapdataGlobal.mapState.latitude - 25;
-        adapter.scene.keyframes.camera.values[0].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[0].pitch = 0;
-        adapter.scene.keyframes.camera.values[0].zoom = mapdataGlobal.mapState.zoom;
-
-        adapter.scene.keyframes.camera.values[1].bearing = 0;
-        adapter.scene.keyframes.camera.values[1].latitude = mapdataGlobal.mapState.latitude + 25;
-        adapter.scene.keyframes.camera.values[1].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[1].pitch = 0;
-        adapter.scene.keyframes.camera.values[1].zoom = mapdataGlobal.mapState.zoom;
-      }else if(cameraType === 'East to West'){
-        adapter.scene.keyframes.camera.values[0].bearing = 0;
-        adapter.scene.keyframes.camera.values[0].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[0].longitude = mapdataGlobal.mapState.longitude + 25;
-        adapter.scene.keyframes.camera.values[0].pitch = 0;
-        adapter.scene.keyframes.camera.values[0].zoom = mapdataGlobal.mapState.zoom;
-
-        adapter.scene.keyframes.camera.values[1].bearing = 0;
-        adapter.scene.keyframes.camera.values[1].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[1].longitude = mapdataGlobal.mapState.longitude - 25;
-        adapter.scene.keyframes.camera.values[1].pitch = 0;
-        adapter.scene.keyframes.camera.values[1].zoom = mapdataGlobal.mapState.zoom;
-      }else if(cameraType === 'West to East'){
-        adapter.scene.keyframes.camera.values[0].bearing = 0;
-        adapter.scene.keyframes.camera.values[0].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[0].longitude = mapdataGlobal.mapState.longitude - 25;
-        adapter.scene.keyframes.camera.values[0].pitch = 0;
-        adapter.scene.keyframes.camera.values[0].zoom = mapdataGlobal.mapState.zoom;
-
-        adapter.scene.keyframes.camera.values[1].bearing = 0;
-        adapter.scene.keyframes.camera.values[1].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[1].longitude = mapdataGlobal.mapState.longitude + 25;
-        adapter.scene.keyframes.camera.values[1].pitch = 0;
-        adapter.scene.keyframes.camera.values[0].zoom = mapdataGlobal.mapState.zoom;
-      }else if(cameraType === 'Zoom Out'){
-        adapter.scene.keyframes.camera.values[0].bearing = 0;
-        adapter.scene.keyframes.camera.values[0].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[0].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[0].pitch = 0;
-        adapter.scene.keyframes.camera.values[0].zoom = mapdataGlobal.mapState.zoom;
-
-        adapter.scene.keyframes.camera.values[1].bearing = 0;
-        adapter.scene.keyframes.camera.values[1].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[1].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[1].pitch = 0;
-        adapter.scene.keyframes.camera.values[1].zoom = mapdataGlobal.mapState.zoom - 2;
-      }else if(cameraType === 'Zoom In'){
-        adapter.scene.keyframes.camera.values[0].bearing = 0;
-        adapter.scene.keyframes.camera.values[0].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[0].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[0].pitch = 0;
-        adapter.scene.keyframes.camera.values[0].zoom = mapdataGlobal.mapState.zoom;
-
-        adapter.scene.keyframes.camera.values[1].bearing = 0;
-        adapter.scene.keyframes.camera.values[1].latitude = mapdataGlobal.mapState.latitude;
-        adapter.scene.keyframes.camera.values[1].longitude = mapdataGlobal.mapState.longitude;
-        adapter.scene.keyframes.camera.values[1].pitch = 0;
-        adapter.scene.keyframes.camera.values[1].zoom = mapdataGlobal.mapState.zoom + 2;
-      }      
-     console.log("adapter", adapter);
-    //  const newCameraHandle = adapter.scene.animationLoop.timeline.attachAnimation(camera);
-    //  this.setState({cameraHandle: newCameraHandle})
 }
 
 const encoderSettings = {
@@ -473,8 +347,9 @@ class RenderSettingsPanel extends Component {
 
     this.state = {
       mediaType: "WebM Video",
-      camera: undefined,
+      camera: "None", // @Chris slightly different from your plan. Camera for the str of which camera angle;. cameraHandle for the actual Luma str
       fileName: "Video Name",
+      cameraHandle: undefined,
     //  quality: "High (720p)"
     };
 
@@ -498,40 +373,63 @@ class RenderSettingsPanel extends Component {
 
   // TODO test cases ['Orbit (90º)','Orbit (180º)', 'Orbit (360º)', 'North to South', 'North to South', 'Zoom In', 'Zoom Out']
   // Helper function that will parse input str for type of camera to be used for keyframes
-  parseCreateKeyframe(strCameraType) {
-    const match = strCameraType.match(/\b(?!to)\b\S+\w/g) // returns 1 based on parse ex: ["Orbit", "90"] | ["North", "South"] | ["Zoom", "In"]
-
-    console.log("this.state parse...fn", this.state)
-
-    if (this.state.camera != undefined) { // Unsure if you can do: if (this.state.cameraHandle)
+  createKeyframe(strCameraType) {    
+    if (this.state.cameraHandle != undefined) { // Unsure if you can do: if (this.state.cameraHandle)
       // NOTE this is where each parts of chain come from
       // adapter - Deck, scene.animationLoop - Hubble, timeline.detachAnimation - Luma
-      adapter.scene.animationLoop.timeline.detachAnimation(this.state.camera)  
+      adapter.scene.animationLoop.timeline.detachAnimation(this.state.cameraHandle)  
     }
 
-    // NOTE adapter was set in sceneBuilder fn
-    const firstKeyframe = adapter.scene.keyframes.camera.values[0] // Named this way for possibility of >2 keyframes in future
-    const secondKeyframe = adapter.scene.keyframes.camera.values[1]
+    const camera = new CameraKeyframes({	
+      timings: [0, 2000],	
+      keyframes: [	
+        {	
+          longitude: 0,	
+          latitude: 11,	
+          zoom: 2,	
+          pitch: 0,	
+          bearing: 0	
+        },	
+        {	
+          longitude: 0,	
+          latitude: 11,	
+          zoom: 2,	
+          bearing: 90,	
+          pitch: 0	
+        }	
+      ],	
+      easings: [easing.easeInOut]	
+    })	
+    
+    // Named this way for possibility of >2 keyframes in future
+    // const firstKeyframe = camera[0] 
+    // const secondKeyframe = camera[1]
+    this.parseSetCameraType(strCameraType, camera) // TODO fix. Intention was to call the function and modify camera
 
-    if (match[0].includes("Orbit")) {
+    const newCameraHandle = adapter.scene.animationLoop.timeline.attachAnimation(camera);
+    this.setState({cameraHandle: newCameraHandle})
+    // return ???
+  }
+
+  parseSetCameraType(strCameraType, camera) {
+    const match = strCameraType.match(/\b(?!to)\b\S+\w/g) // returns len 2 arr of important keywords ex: ["Orbit", "90"] | ["North", "South"] | ["Zoom", "In"]
+    console.log("camera", camera)
+    if (match[0] == "Orbit") {
       firstKeyframe.bearing = 0; // Reset bearing if set. Default is 0
       secondKeyframe.bearing = parseInt(match[1])
     }
 
-    // TODO set that checks if str contains N/E/S/W
-    // if (match[0] == "N/E/S/W") {
-    //   pass
+    // set_checker = new Set(["East", "South", "West", "North"])
+    // if (set_checker.has(match[0])) { // TODO use turf.js to modify keyframe distances
+    //   console.log("Reached")
     // }
 
     // TODO if 
-    // if (match[0].includes("Zoom")) {
-    //   pass
-    // }
+  //   if (match[0] == "Zoom") {
+  //     if (match[1] == "In") {
 
-
-    const newCameraHandle = adapter.scene.animationLoop.timeline.attachAnimation(this.state.camera);
-    this.setState({camera: newCameraHandle})
-    // return ???
+  //     }
+  //   }
   }
 
   setMediaTypeState(media){
@@ -543,7 +441,7 @@ class RenderSettingsPanel extends Component {
       this.setState({
         camera: option
       });
-      this.parseCreateKeyframe(option);
+      this.parseSetCameraType(option);
       // setKeyframes(option);
   }
   setFileName(name){
