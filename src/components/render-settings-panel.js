@@ -50,6 +50,7 @@ let mapdataGlobal = null;
 
 function sceneBuilder(animationLoop) {
   const data = {};
+  // PSEUDO calls helper function to create new keyframes
   const keyframes = {
     camera: new CameraKeyframes({
       timings: [0, 1000],
@@ -85,6 +86,7 @@ function sceneBuilder(animationLoop) {
   });
 }
 
+// Attach/detach keyframes
 function setKeyframes(cameraType){
   adapter.scene.keyframes.camera._lastTime = 0;
   adapter.scene.keyframes.camera.factor = 0;
@@ -208,6 +210,8 @@ function setKeyframes(cameraType){
         adapter.scene.keyframes.camera.values[1].zoom = mapdataGlobal.mapState.zoom + 2;
       }      
      console.log("adapter", adapter);
+    //  const newCameraHandle = adapter.scene.animationLoop.timeline.attachAnimation(camera);
+    //  this.setState({cameraHandle: newCameraHandle})
 }
 
 const encoderSettings = {
@@ -469,7 +473,7 @@ class RenderSettingsPanel extends Component {
 
     this.state = {
       mediaType: "WebM Video",
-      camera: "None",
+      camera: undefined,
       fileName: "Video Name",
     //  quality: "High (720p)"
     };
@@ -486,6 +490,50 @@ class RenderSettingsPanel extends Component {
     buttonHeight: '16px'
   };
 
+  // PSEUDO BRAINSTORM - sceneBuilder
+  // factory function to handle parsing of keyframes. Could possibly have functions for orbit, north/south, etc.
+  // helper function to apply keyframes (attach/detach animation) (inputs - factory function camera keyframes obj)
+  // NOTE: every attach/detach gives a new id (Number from Timeline)
+  // switcher function - when cameraHandle is undefined, just use attachAnimation + default keyframes
+
+  // TODO test cases ['Orbit (90º)','Orbit (180º)', 'Orbit (360º)', 'North to South', 'North to South', 'Zoom In', 'Zoom Out']
+  // Helper function that will parse input str for type of camera to be used for keyframes
+  parseCreateKeyframe(strCameraType) {
+    const match = strCameraType.match(/\b(?!to)\b\S+\w/g) // returns 1 based on parse ex: ["Orbit", "90"] | ["North", "South"] | ["Zoom", "In"]
+
+    console.log("this.state parse...fn", this.state)
+
+    if (this.state.camera != undefined) { // Unsure if you can do: if (this.state.cameraHandle)
+      // NOTE this is where each parts of chain come from
+      // adapter - Deck, scene.animationLoop - Hubble, timeline.detachAnimation - Luma
+      adapter.scene.animationLoop.timeline.detachAnimation(this.state.camera)  
+    }
+
+    // NOTE adapter was set in sceneBuilder fn
+    const firstKeyframe = adapter.scene.keyframes.camera.values[0] // Named this way for possibility of >2 keyframes in future
+    const secondKeyframe = adapter.scene.keyframes.camera.values[1]
+
+    if (match[0].includes("Orbit")) {
+      firstKeyframe.bearing = 0; // Reset bearing if set. Default is 0
+      secondKeyframe.bearing = parseInt(match[1])
+    }
+
+    // TODO set that checks if str contains N/E/S/W
+    // if (match[0] == "N/E/S/W") {
+    //   pass
+    // }
+
+    // TODO if 
+    // if (match[0].includes("Zoom")) {
+    //   pass
+    // }
+
+
+    const newCameraHandle = adapter.scene.animationLoop.timeline.attachAnimation(this.state.camera);
+    this.setState({camera: newCameraHandle})
+    // return ???
+  }
+
   setMediaTypeState(media){
     this.setState({
       mediaType: media
@@ -495,7 +543,8 @@ class RenderSettingsPanel extends Component {
       this.setState({
         camera: option
       });
-      setKeyframes(option);
+      this.parseCreateKeyframe(option);
+      // setKeyframes(option);
   }
   setFileName(name){
     this.setState({
@@ -512,7 +561,7 @@ class RenderSettingsPanel extends Component {
 
   
   render() {
-
+    console.log("this.state", this.state)
     const {buttonHeight, settingsWidth, handleClose} = this.props;
     const settingsData = {
       mediaType : this.state.mediaType,
