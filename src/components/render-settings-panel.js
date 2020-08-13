@@ -52,29 +52,29 @@ let mapdataGlobal = null;
 function sceneBuilder(animationLoop) {
   const data = {};
   // PSEUDO calls helper function to create new keyframes
-  const keyframes = RenderSettingsPanel.createKeyframe()
-  // {
-    // camera: new CameraKeyframes({
-    //   timings: [0, 1000],
-    //   keyframes: [
-    //     {
-    //       longitude: mapdataGlobal.mapState.longitude,
-    //       latitude: mapdataGlobal.mapState.latitude,
-    //       zoom: mapdataGlobal.mapState.zoom,
-    //       pitch: 0,
-    //       bearing: 0
-    //     },
-    //     {
-    //       longitude: mapdataGlobal.mapState.longitude,
-    //       latitude: mapdataGlobal.mapState.latitude,
-    //       zoom: mapdataGlobal.mapState.zoom,
-    //       bearing: 0,
-    //       pitch: 0
-    //     }
-    //   ],
-    //   easings: [easing.easeInOut]
-    // })
-  // };
+  const keyframes = 
+  {
+    camera: new CameraKeyframes({
+      timings: [0, 1000],
+      keyframes: [
+        {
+          longitude: mapdataGlobal.mapState.longitude,
+          latitude: mapdataGlobal.mapState.latitude,
+          zoom: mapdataGlobal.mapState.zoom,
+          pitch: 0,
+          bearing: 0
+        },
+        {
+          longitude: mapdataGlobal.mapState.longitude,
+          latitude: mapdataGlobal.mapState.latitude,
+          zoom: mapdataGlobal.mapState.zoom,
+          bearing: 0,
+          pitch: 0
+        }
+      ],
+      easings: [easing.easeInOut]
+    })
+  };
   animationLoop.timeline.attachAnimation(keyframes.camera);
 
   // TODO: Figure out how to set up the size 
@@ -378,42 +378,22 @@ class RenderSettingsPanel extends Component {
       // NOTE this is where each parts of chain come from
       // adapter - Deck, scene.animationLoop - Hubble, timeline.detachAnimation - Luma
       adapter.scene.animationLoop.timeline.detachAnimation(this.state.cameraHandle)  
+      console.log("DETACHED")
     }
 
-    const camera = new CameraKeyframes({	
-      timings: [0, 2000],	
-      keyframes: [	
-        {	
-          longitude: 0,	
-          latitude: 11,	
-          zoom: 2,	
-          pitch: 0,	
-          bearing: 0	
-        },	
-        {	
-          longitude: 0,	
-          latitude: 11,	
-          zoom: 2,	
-          bearing: 90,	
-          pitch: 0	
-        }	
-      ],	
-      easings: [easing.easeInOut]	
-    })	
-    
-    // Named this way for possibility of >2 keyframes in future
-    // const firstKeyframe = camera[0] 
-    // const secondKeyframe = camera[1]
-    this.parseSetCameraType(strCameraType, camera) // TODO fix. Intention was to call the function and modify camera
+    this.parseSetCameraType(strCameraType, adapter.scene.keyframes.camera)
 
-    const newCameraHandle = adapter.scene.animationLoop.timeline.attachAnimation(camera);
+    const newCameraHandle = adapter.scene.animationLoop.timeline.attachAnimation(adapter.scene.keyframes.camera);
     this.setState({cameraHandle: newCameraHandle})
-    // return ???
   }
 
   parseSetCameraType(strCameraType, camera) {
     const match = strCameraType.match(/\b(?!to)\b\S+\w/g) // returns len 2 arr of important keywords ex: ["Orbit", "90"] | ["North", "South"] | ["Zoom", "In"]
-    console.log("camera", camera)
+
+    // Named this way for possibility of >2 keyframes in future
+    const firstKeyframe = camera.values[0]
+    const secondKeyframe = camera.values[1]
+
     if (match[0] == "Orbit") {
       firstKeyframe.bearing = 0; // Reset bearing if set. Default is 0
       secondKeyframe.bearing = parseInt(match[1])
@@ -441,7 +421,8 @@ class RenderSettingsPanel extends Component {
       this.setState({
         camera: option
       });
-      this.parseSetCameraType(option);
+      this.createKeyframe(option)
+      // this.parseSetCameraType(option);
       // setKeyframes(option);
   }
   setFileName(name){
