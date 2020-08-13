@@ -378,25 +378,43 @@ class RenderSettingsPanel extends Component {
     if (this.state.cameraHandle != undefined) {
       // NOTE this is where each parts of chain come from
       // adapter - Deck, scene.animationLoop - Hubble, timeline.detachAnimation - Luma
-      adapter.scene.animationLoop.timeline.detachAnimation(this.state.cameraHandle)
-      // TODO reset to default? Might possibly fix animations stacking
-      // adapter = this.deepCopyAdapter
-      console.log("DETACHED")
+      adapter.scene.animationLoop.timeline.detachAnimation(this.state.cameraHandle)  
     }
 
-    this.parseSetCameraType(strCameraType, adapter.scene.keyframes.camera)
+    const camera = new CameraKeyframes({	
+      timings: [0, 2000],	
+      keyframes: [	
+        {	
+          longitude: 0,	
+          latitude: 11,	
+          zoom: 2,	
+          pitch: 0,	
+          bearing: 0	
+        },	
+        {	
+          longitude: 0,	
+          latitude: 11,	
+          zoom: 2,	
+          bearing: 90,	
+          pitch: 0	
+        }	
+      ],	
+      easings: [easing.easeInOut]	
+    })	
+    
+    // Named this way for possibility of >2 keyframes in future
+    // const firstKeyframe = camera[0] 
+    // const secondKeyframe = camera[1]
+    this.parseSetCameraType(strCameraType, camera) // TODO fix. Intention was to call the function and modify camera
 
-    const newCameraHandle = adapter.scene.animationLoop.timeline.attachAnimation(adapter.scene.keyframes.camera);
+    const newCameraHandle = adapter.scene.animationLoop.timeline.attachAnimation(camera);
     this.setState({cameraHandle: newCameraHandle})
+    // return ???
   }
 
   parseSetCameraType(strCameraType, camera) { // TODO bug where options stack
     const match = strCameraType.match(/\b(?!to)\b\S+\w/g) // returns len 2 arr of important keywords ex: ["Orbit", "90"] | ["North", "South"] | ["Zoom", "In"]
-
-    // Named this way for possibility of >2 keyframes in future
-    const firstKeyframe = camera.values[0]
-    const secondKeyframe = camera.values[1]
-
+    console.log("camera", camera)
     if (match[0] == "Orbit") {
       firstKeyframe.bearing = 0; // Reset bearing if set. Default is 0
       secondKeyframe.bearing = parseInt(match[1])
@@ -428,7 +446,8 @@ class RenderSettingsPanel extends Component {
       this.setState({
         camera: option
       });
-      this.createKeyframe(option)
+      this.parseSetCameraType(option);
+      // setKeyframes(option);
   }
   setFileName(name){
     this.setState({
