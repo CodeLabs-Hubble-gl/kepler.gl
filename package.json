@@ -154,6 +154,7 @@
     "redux": "^3.0.4",
     "redux-actions": "^2.2.1",
     "reselect": "^3.0.1",
+    "rfdc": "^1.1.4",
     "s2-geometry": "^1.2.10",
     "supercluster": "^6.0.1",
     "type-analyzer": "0.2.5",

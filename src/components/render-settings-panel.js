@@ -39,6 +39,8 @@ import {DeckAdapter, ScatterPlotLayerKeyframes} from 'hubble.gl';
 import {DEFAULT_TIME_FORMAT} from 'constants';
 import moment from 'moment';
 
+const clone = require('rfdc')()
+
 const DEFAULT_BUTTON_HEIGHT = '32px';
 const DEFAULT_BUTTON_WIDTH = '64px';
 const DEFAULT_PADDING = '32px';
@@ -48,10 +50,8 @@ const DEFAULT_ROW_GAP = '16px';
 let adapter = new DeckAdapter(sceneBuilder);
 let mapdataGlobal = null;
 
-// @Chris I think this has to be done this way since adapter eventually gets used on many elements outside of the class
 function sceneBuilder(animationLoop) {
   const data = {};
-  // PSEUDO calls helper function to create new keyframes
   const keyframes = 
   {
     camera: new CameraKeyframes({
@@ -347,9 +347,10 @@ class RenderSettingsPanel extends Component {
 
     this.state = {
       mediaType: "WebM Video",
-      camera: "None", // @Chris slightly different from your plan. Camera for the str of which camera angle;. cameraHandle for the actual Luma str
+      camera: "None", 
       fileName: "Video Name",
       cameraHandle: undefined,
+      deepCopyAdapter: clone(adapter),
     //  quality: "High (720p)"
     };
 
@@ -374,10 +375,12 @@ class RenderSettingsPanel extends Component {
   // TODO test cases ['Orbit (90º)','Orbit (180º)', 'Orbit (360º)', 'North to South', 'North to South', 'Zoom In', 'Zoom Out']
   // Helper function that will parse input str for type of camera to be used for keyframes
   createKeyframe(strCameraType) {    
-    if (this.state.cameraHandle != undefined) { // Unsure if you can do: if (this.state.cameraHandle)
+    if (this.state.cameraHandle != undefined) {
       // NOTE this is where each parts of chain come from
       // adapter - Deck, scene.animationLoop - Hubble, timeline.detachAnimation - Luma
-      adapter.scene.animationLoop.timeline.detachAnimation(this.state.cameraHandle)  
+      adapter.scene.animationLoop.timeline.detachAnimation(this.state.cameraHandle)
+      // TODO reset to default? Might possibly fix animations stacking
+      // adapter = this.deepCopyAdapter
       console.log("DETACHED")
     }
 
@@ -387,7 +390,7 @@ class RenderSettingsPanel extends Component {
     this.setState({cameraHandle: newCameraHandle})
   }
 
-  parseSetCameraType(strCameraType, camera) {
+  parseSetCameraType(strCameraType, camera) { // TODO bug where options stack
     const match = strCameraType.match(/\b(?!to)\b\S+\w/g) // returns len 2 arr of important keywords ex: ["Orbit", "90"] | ["North", "South"] | ["Zoom", "In"]
 
     // Named this way for possibility of >2 keyframes in future
@@ -404,12 +407,16 @@ class RenderSettingsPanel extends Component {
     //   console.log("Reached")
     // }
 
-    // TODO if 
-  //   if (match[0] == "Zoom") {
-  //     if (match[1] == "In") {
-
-  //     }
-  //   }
+    if (match[0] == "Zoom") {  
+      if (match[1] == "In") {
+        firstKeyframe.zoom = 2
+        secondKeyframe.zoom = 15
+      } else 
+      if (match[1] == "Out") {
+        firstKeyframe.zoom = 15
+        secondKeyframe.zoom = 2
+      }
+    }
   }
 
   setMediaTypeState(media){
@@ -422,8 +429,6 @@ class RenderSettingsPanel extends Component {
         camera: option
       });
       this.createKeyframe(option)
-      // this.parseSetCameraType(option);
-      // setKeyframes(option);
   }
   setFileName(name){
     this.setState({
