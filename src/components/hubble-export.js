@@ -31,12 +31,12 @@ import {toggleHubbleExportModal} from 'kepler.gl/actions';
 
 function mapStateToProps(state = {}, props) {
     return { // TODO unsure if other redux stores are needed atm
-    //   ...props,
-    //   visState: state.visState,
-    //   mapStyle: state.mapStyle,
-    //   mapState: state.mapState,
+      ...props,
+      visState: state.visState,
+      mapStyle: state.mapStyle,
+      mapState: state.mapState,
       uiState: state.uiState,
-    //   providerState: state.providerState,
+      providerState: state.providerState,
     };
 }
 
