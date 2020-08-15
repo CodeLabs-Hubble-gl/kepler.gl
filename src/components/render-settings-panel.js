@@ -25,6 +25,8 @@ import {Delete} from 'kepler.gl/components/common/icons';
 import ItemSelector from 'kepler.gl/components/common/item-selector/item-selector';
 import {Scene} from 'components/scene'; 
 
+import * as turf from '@turf/turf';
+
 import {
   WebMEncoder,
   JPEGSequenceEncoder,
@@ -385,44 +387,46 @@ class RenderSettingsPanel extends Component {
     const firstKeyframe = camera.values[0]
     const secondKeyframe = camera.values[1]
 
+    // Converts mapState object to turf friendly Point obj (GEOJSON)
+    const point = turf.point([camera.values[1].longitude, camera.values[1].latitude])
+    
     if (match[0] == "Orbit") {
-      firstKeyframe.bearing = 0; // Reset bearing if set. Default is 0
       secondKeyframe.bearing = parseInt(match[1])
     }
 
+    // TODO future option that'll allow user to set X distance (km OR miles) directionally. Options inside turf
+    // https://turfjs.org/docs/#transformTranslate
     const set_checker = new Set(["East", "South", "West", "North"])
-    if (set_checker.has(match[0])) { // TODO use turf.js to modify keyframe distances
+    if (set_checker.has(match[0])) {
       if (match[0] == "East") { // TODO Temporary solution to catch this branch to master. Doesn't work for "East to North" for example if option allows in future
-        firstKeyframe.longitude = 55
-        secondKeyframe.longitude = -77
+        const translatedPoly = turf.transformTranslate(point, 10000, 270);
+        secondKeyframe.longitude = translatedPoly.geometry.coordinates[0]
       } else 
       if (match[0] == "South") {
-        firstKeyframe.latitude = -20
-        secondKeyframe.latitude = 70
+        const translatedPoly = turf.transformTranslate(point, 10000, 0);
+        secondKeyframe.latitude = translatedPoly.geometry.coordinates[1]
       } else 
       if (match[0] == "West") {
-        firstKeyframe.longitude = -77
-        secondKeyframe.longitude = 55
+        const translatedPoly = turf.transformTranslate(point, 10000, 90);
+        secondKeyframe.longitude = translatedPoly.geometry.coordinates[0]
       } else 
       if (match[0] == "North") {
-        firstKeyframe.latitude = 70
-        secondKeyframe.latitude = -20
+        const translatedPoly = turf.transformTranslate(point, 10000, 180);
+        secondKeyframe.latitude = translatedPoly.geometry.coordinates[1]
       }
     }
 
     if (match[0] == "Zoom") {
       if (match[1] == "In") {
-        firstKeyframe.zoom = 2
         secondKeyframe.zoom = 15
       } else 
       if (match[1] == "Out") {
         firstKeyframe.zoom = 15
-        secondKeyframe.zoom = 2
       } 
     }
   }
 
-  resetKeyframes() { // default keyframes from scenebuilder fn DO NOT MODIFY
+  resetKeyframes() { // minified default keyframes from scenebuilder fn
     return {camera:new CameraKeyframes({timings:[0,1000],keyframes:[{longitude:mapdataGlobal.mapState.longitude,latitude:mapdataGlobal.mapState.latitude,zoom:mapdataGlobal.mapState.zoom,pitch:0,bearing:0},{longitude:mapdataGlobal.mapState.longitude,latitude:mapdataGlobal.mapState.latitude,zoom:mapdataGlobal.mapState.zoom,bearing:0,pitch:0}],easings:[easing.easeInOut]})}
   }
  
