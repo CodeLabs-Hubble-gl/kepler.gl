@@ -1509,6 +1509,14 @@
     "@babel/runtime" "^7.3.1"
     "@loaders.gl/loader-utils" "2.2.8"
 
+"@loaders.gl/core@^2.1.6":
+  version "2.2.8"
+  resolved "https://registry.yarnpkg.com/@loaders.gl/core/-/core-2.2.8.tgz#fb2060f3b90d3babe0de2a128fc5227f921c08ad"
+  integrity sha512-PM74zQA6Kn6NJCMoRdEDENy9jQWQyMkICKZ6o8UGa6/oi3dD4LO5GhFZSwU6W/Lxl/IeUwaZBQ3MqfT3aXA0Dg==
+  dependencies:
+    "@babel/runtime" "^7.3.1"
+    "@loaders.gl/loader-utils" "2.2.8"
+
 "@loaders.gl/csv@^2.2.5":
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/@loaders.gl/csv/-/csv-2.2.5.tgz#4667cbfb62b98d918a1c4e233bfb880939ab74fb"

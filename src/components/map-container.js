@@ -295,6 +295,14 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
           layerHoverProp.compareType = interactionConfig.tooltip.config.compareType;
         }
       }
+
+      const commonProp = {	
+        onClose: this._onCloseMapPopover,	
+        mapW: mapState.width,	
+        mapH: mapState.height,	
+        zoom: mapState.zoom	
+      };	
+
       return (
         <div>
           {hasTooltip && (
@@ -499,7 +507,6 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
       };
 
       const isEdit = uiState.mapControls.mapDraw.active;
-     
       return (
       
         <StyledMapContainer style={MAP_STYLE.container}>
