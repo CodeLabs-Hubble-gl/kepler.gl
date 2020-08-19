@@ -23,12 +23,12 @@ import React, {Component, useState, useRef} from 'react';
 //Map Component
 import DeckGL from '@deck.gl/react';
 import {OVERLAY_TYPE} from 'layers/base-layer';
-import MapboxGLMap from 'react-map-gl';
+import {MapboxGLMap, StaticMap} from 'react-map-gl';
 import {transformRequest} from 'utils/map-style-utils/mapbox-utils';
 
-import {MapView} from '@deck.gl/core';
+import {MapView, OrthographicView, View} from '@deck.gl/core';
 import {TileLayer} from '@deck.gl/geo-layers';
-import {BitmapLayer, PathLayer} from '@deck.gl/layers';
+import {BitmapLayer, PathLayer, TextLayer} from '@deck.gl/layers';
 
 import { load } from "@loaders.gl/core";
 
@@ -44,6 +44,20 @@ const INITIAL_VIEW_STATE = {
   bearing: 0
 };
 
+const TEXT_DATA = [
+  {
+    text: 'Hello\nWorld', // TODO make this an input and parse their str. Ex: new line becomes \n
+    position: [0, 0],
+    color: [255, 0, 0] // TODO temporarily red
+  }
+];
+
+const timestamp = new TextLayer({
+  data: TEXT_DATA,
+  getText: d => d.text,
+  getPosition: d => d.position, // TODO make this relative to camera
+  getColor: d => d.color,
+})
 
 const tileLayer = new TileLayer({
 
@@ -80,10 +94,10 @@ const devicePixelRatio = (typeof window !== 'undefined' && window.devicePixelRat
 
 export class Scene extends Component {
 
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
 
-   this.mapData = this.props.mapData;
+    this.mapData = this.props.mapData;
   
    //this.adapter = new DeckAdapter(this.props.sceneBuilder);
       }
@@ -127,9 +141,19 @@ export class Scene extends Component {
         console.log("this.deckgl", prop);
       };
 
+      componentWillUnmount() { // @Chris Note that modal unmounts cleanly. This was the check I put in
+        console.log("Reached componentWillUnmount")
+      }
+      
+      // @Chris trying to avoid this force update. However, I'm unsure of what props need to be passed
       // Is this being used right?
       componentDidMount() {
         this.forceUpdate();
+        // this.props.adapter.setProps()
+        // this.props.adapter._updateFromProps()
+      }
+
+      componentDidUpdate() {
       }
 
       // This is provisional - 
@@ -160,7 +184,8 @@ export class Scene extends Component {
 
     
        
-
+      // TODO refactor this. Layers are reverse, filtered, etc. only to be redefined later
+      // TODO FIX tileLayer & textlayer need to be added manually
         // wait until data is ready before render data layers
       if (layerOrder && layerOrder.length) {
           // last layer render first
@@ -172,14 +197,13 @@ export class Scene extends Component {
             )
             .reduce(this._renderLayer, []);
         }
-
+        deckGlLayers[3] = timestamp;
         deckGlLayers[2] = deckGlLayers[1];
         deckGlLayers[1] = deckGlLayers[0]
         deckGlLayers[0] = tileLayer;
         
-
-        
         console.log("deckGlLayers ", deckGlLayers);
+        console.log("timestamp textlayer", timestamp)
 
         // MapboxGLMap
         const mapProps = {
@@ -194,7 +218,17 @@ export class Scene extends Component {
             position: 'relative'
           }
           console.log("tilelayer ",tileLayer);
-     
+
+        // @Chris passing this view into the DeckGL class does not work despite it having the same content as what's uncommented below
+        const views = {views: [
+          new MapView({repeat: true}),
+          // new MapView({id: 'minimap', x: 10, y: 10, width: '20%', height: '20%', controller: true})
+        ]}
+
+        
+        // console.log("this.props.adapter", this.props.adapter)
+        // console.log("current", current)
+        // ??? What is this.deckgl & current? Tried console logging and current doesn't exist
         return (
             <div style={{width: '480px', height: "460px", position: 'relative'}}>
               <DeckGL
@@ -205,12 +239,16 @@ export class Scene extends Component {
                 useDevicePixels={useDevicePixels}
                 style={style}
                 views={new MapView({repeat: true})}
+                // views={views}
                 /* onBeforeRender={this._onBeforeRender} // Not yet
                       onHover={visStateActions.onLayerHover} // Not yet
                       onClick={visStateActions.onLayerClick}*/ // Not yet
-                {...this.props.adapter.getProps(this.deckgl, () => {}, () => {this.forceUpdate()})}
+                {...this.props.adapter.getProps(this.deckgl, () => {}, () => {this.forceUpdate()})} /* @Chris My understanding (from Elisa) is that this is forced because this.deckgl is not defined initially */
+                // {...this.props.adapter._updateFromProps()}
               >
-                 
+                 <View id="map">
+                  <StaticMap mapboxApiAccessToken={MAPBOX_TOKEN} />
+                </View>
                 
       
               </DeckGL>  

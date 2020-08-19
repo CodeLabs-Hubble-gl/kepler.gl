@@ -381,7 +381,7 @@ class RenderSettingsPanel extends Component {
   }
 
   parseSetCameraType(strCameraType, camera) {
-    const match = strCameraType.match(/\b(?!to)\b\S+\w/g) // returns len 2 arr of important keywords ex: ["Orbit", "90"] | ["North", "South"] | ["Zoom", "In"]
+    const match = strCameraType.match(/\b(?!to)\b\S+\w/g) // returns arr of important keywords. Should work for 2+ words in future ex: ["Orbit", "90"] | ["North", "South"] | ["Zoom", "In"]
 
     // Named this way for possibility of >2 keyframes in future
     const firstKeyframe = camera.values[0]
