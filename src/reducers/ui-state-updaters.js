@@ -754,19 +754,3 @@ export const startSaveStorage = (state, {payload: mapSaved}) => {
     apply_(toggleModalUpdater, payload_(mapSaved ? OVERWRITE_MAP_ID : SAVE_MAP_ID))
   ])(state);
 };
-/** TODO do I need state? And update docs
- * Set the locale of the UI
- * @memberof uiStateUpdaters
- * @param state `uiState`
- * @param action
- * @param action.payload
- * @param action.payload.isOpen
- * @returns nextState
- * @type {typeof import('./ui-state-updaters').toggleHubbleExportModalUpdater}
- * @public
- */
-export const toggleHubbleExportModalUpdater = (state, {payload: {isOpen}}) => (
-  {
-  ...state,
-  hubbleExportModalOpen: isOpen,
-});
