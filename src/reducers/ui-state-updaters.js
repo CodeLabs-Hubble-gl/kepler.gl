@@ -723,14 +723,14 @@ export const setLocaleUpdater = (state, {payload: {locale}}) => ({
   locale
 });
 
-/** TODO do I need state? And update docs
- * Set the locale of the UI
+/** 
+ * Sets an isOpen boolean within Kepler's Redux store. Frees up resources by hiding Deck layers when isOpen: true
  * @memberof uiStateUpdaters
  * @param state `uiState`
  * @param action
  * @param action.payload
  * @param action.payload.isOpen
- * @returns nextState
+ * @returns nextState TODO doesn't return anything? What is nextState?
  * @type {typeof import('./ui-state-updaters').toggleHubbleExportModalUpdater}
  * @public
  */
