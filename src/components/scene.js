@@ -236,13 +236,7 @@ export class Scene extends Component {
                       onClick={visStateActions.onLayerClick}*/ // Not yet
                 {...this.props.adapter.getProps(this.deckgl, () => {}, () => {this.forceUpdate()})}
                 // {...this.props.adapter._updateFromProps()}
-              >
-                 <View id="map">
-                  <StaticMap mapboxApiAccessToken={MAPBOX_TOKEN} />
-                </View>
-                
-      
-              </DeckGL>  
+              />                
             </div>
           );
     }
