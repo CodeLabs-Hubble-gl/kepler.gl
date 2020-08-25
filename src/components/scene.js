@@ -140,12 +140,7 @@ export class Scene extends Component {
       print(prop){
         console.log("this.deckgl", prop);
       };
-
-      componentWillUnmount() { // @Chris Note that modal unmounts cleanly. This was the check I put in
-        console.log("Reached componentWillUnmount")
-      }
       
-      // @Chris trying to avoid this force update. However, I'm unsure of what props need to be passed
       // Is this being used right?
       componentDidMount() {
         this.forceUpdate();
@@ -218,13 +213,6 @@ export class Scene extends Component {
             position: 'relative'
           }
           console.log("tilelayer ",tileLayer);
-
-        // @Chris passing this view into the DeckGL class does not work despite it having the same content as what's uncommented below
-        const views = {views: [
-          new MapView({repeat: true}),
-          // new MapView({id: 'minimap', x: 10, y: 10, width: '20%', height: '20%', controller: true})
-        ]}
-
         
         // console.log("this.props.adapter", this.props.adapter)
         // console.log("current", current)
@@ -238,12 +226,15 @@ export class Scene extends Component {
                 layers={deckGlLayers}
                 useDevicePixels={useDevicePixels}
                 style={style}
-                views={new MapView({repeat: true})}
+                views={[
+                  new MapView({repeat: true}),
+                  // new MapView({id: 'minimap', x: 10, y: 10, width: '20%', height: '20%', controller: true})
+                ]}
                 // views={views}
                 /* onBeforeRender={this._onBeforeRender} // Not yet
                       onHover={visStateActions.onLayerHover} // Not yet
                       onClick={visStateActions.onLayerClick}*/ // Not yet
-                {...this.props.adapter.getProps(this.deckgl, () => {}, () => {this.forceUpdate()})} /* @Chris My understanding (from Elisa) is that this is forced because this.deckgl is not defined initially */
+                {...this.props.adapter.getProps(this.deckgl, () => {}, () => {this.forceUpdate()})}
                 // {...this.props.adapter._updateFromProps()}
               >
                  <View id="map">

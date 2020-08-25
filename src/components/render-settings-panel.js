@@ -396,8 +396,8 @@ class RenderSettingsPanel extends Component {
 
     // TODO future option that'll allow user to set X distance (km OR miles) directionally. Options inside turf
     // https://turfjs.org/docs/#transformTranslate
-    const set_checker = new Set(["East", "South", "West", "North"])
-    if (set_checker.has(match[0])) {
+    const setChecker = new Set(["East", "South", "West", "North"])
+    if (setChecker.has(match[0])) {
       if (match[0] == "East") { // TODO Temporary solution to catch this branch to master. Doesn't work for "East to North" for example if option allows in future
         const translatedPoly = turf.transformTranslate(point, 10000, 270);
         secondKeyframe.longitude = translatedPoly.geometry.coordinates[0]
