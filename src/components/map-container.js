@@ -508,8 +508,6 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
       const isEdit = uiState.mapControls.mapDraw.active;
       const hasGeocoderLayer = layers.find(l => l.id === GEOCODER_LAYER_ID);
 
-      
-      console.log("layersToRender", layersToRender)
       return (
       
         <StyledMapContainer style={MAP_STYLE.container}>
@@ -546,10 +544,10 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
             transitionDuration={TRANSITION_DURATION}
             onMouseMove={this.props.visStateActions.onMouseMove}
           >
+
             {/* Stops rendering Deck layers when export modal open to allow for more resources when rendering w/ Hubble. */}
             {!uiState.hubbleExportModalOpen && this._renderDeckOverlay(layersToRender)}
             {this._renderMapboxOverlays(layersToRender)}
-
 
             <Editor
               index={index}

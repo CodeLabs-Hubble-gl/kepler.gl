@@ -32,7 +32,7 @@ import {BitmapLayer, PathLayer, TextLayer} from '@deck.gl/layers';
 
 import { load } from "@loaders.gl/core";
 
-const MAPBOX_TOKEN = 'pk.eyJ1IjoicGlvbmVlci1tZSIsImEiOiJjanA0OXMwM2IwcW5qM2tvYnAyYndpdXMxIn0.bqxGkqM2ozOVT57GuVzEjw';
+const MAPBOX_TOKEN = 'REDACTED';
 const TRANSITION_DURATION = 0;
 
 const INITIAL_VIEW_STATE = {
@@ -44,51 +44,6 @@ const INITIAL_VIEW_STATE = {
   bearing: 0
 };
 
-const TEXT_DATA = [
-  {
-    text: 'Hello\nWorld', // TODO make this an input and parse their str. Ex: new line becomes \n
-    position: [0, 0],
-    color: [255, 0, 0] // TODO temporarily red
-  }
-];
-
-const timestamp = new TextLayer({
-  data: TEXT_DATA,
-  getText: d => d.text,
-  getPosition: d => d.position, // TODO make this relative to camera
-  getColor: d => d.color,
-})
-
-const tileLayer = new TileLayer({
-
-  autoHighlight : true,
-  highlightColor: [60, 60, 60, 40],
-  opacity: 1,
-  // https://wiki.openstreetmap.org/wiki/Zoom_levels
-  minZoom: 0,
-  maxZoom: 19,
-  tileSize: 256,
-
-  
-  data: [
-    `http://{d90016be4e11c76b57d0311404f546f06afbae25}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png`
-  ],
-
-
-  renderSubLayers: props => {
-    const {
-      bbox: { west, south, east, north }
-    } = props.tile;
-
-    return new BitmapLayer(props, {
-      data: [],
-      image: props.data,
-      bounds: [west, south, east, north]
-    });
-  }
-})
-
-
 /* global window */
 const devicePixelRatio = (typeof window !== 'undefined' && window.devicePixelRatio) || 1;
 
@@ -98,11 +53,14 @@ export class Scene extends Component {
     super(props);
 
     this.mapData = this.props.mapData;
-  
-   //this.adapter = new DeckAdapter(this.props.sceneBuilder);
-      }
 
-     
+    // Setting up arguments for Orthographic View
+    // NOTE: other arguments allowed zoom, minZoom, maxZoom but those already used by TileLayer. Possible to have 2 instanes?
+    this.mapData.mapState.target = [10, 10, 10]
+  
+    //this.adapter = new DeckAdapter(this.props.sceneBuilder);
+    }
+  
   _renderLayer = (overlays, idx) => {
     const datasets = this.mapData.visState.datasets;
     const layers = this.mapData.visState.layers;    
@@ -122,7 +80,7 @@ export class Scene extends Component {
           onSetLayerDomain: val => this._onLayerSetDomain(idx, val)
         };
   
-        // Layer is Layer class
+    // Layer is Layer class
     const layerOverlay = layer.renderLayer({
           data,
           gpuFilter,
@@ -135,7 +93,7 @@ export class Scene extends Component {
         });
         return overlays.concat(layerOverlay || []);
       };
- 
+      
       // Testing purposes
       print(prop){
         console.log("this.deckgl", prop);
@@ -144,26 +102,22 @@ export class Scene extends Component {
       // Is this being used right?
       componentDidMount() {
         this.forceUpdate();
-        // this.props.adapter.setProps()
-        // this.props.adapter._updateFromProps()
-      }
-
-      componentDidUpdate() {
       }
 
       // This is provisional - 
       // [ADD] TileLayer to the array of layers
 
-  
-
-  
-
-
+      layerFilter({layer, viewport}) { // TODO
+        if (layer.id === 'timestamp') {
+        // if (viewport.id === 'first-person' && layer.id === 'timestamp') {
+          // Do not draw the car layer in the first person view
+          return false;
+        }
+        return true;
+      }
        
      //   interactionConfig,  
         render() {
-      //  console.log("all props ", this.props.mapData);
-
         const mapStyle = this.mapData.mapStyle;
         const mapState = this.mapData.mapState;
         const layers = this.mapData.visState.layers;    
@@ -171,17 +125,61 @@ export class Scene extends Component {
         const layerOrder = this.mapData.visState.layerOrder;
         const animationConfig = this.mapData.visState.animationConfig;
         const useDevicePixels = false;
+
         //Map data
         const mapboxApiAccessToken = this.mapData.mapStyle.mapboxApiAccessToken;
         const mapboxApiUrl = this.mapData.mapStyle.mapboxApiUrl;
+        
         // define trip and geojson layers 
         let deckGlLayers = [];
 
-    
+        const TEXT_DATA = [
+          {
+            text: 'Hello\nWorld', // TODO make this an input and parse their str. Ex: new line becomes \n
+            position: [0, 0],
+            color: [255, 0, 0] // TODO temporarily red
+          }
+        ];
+        
+        const timestamp = new TextLayer({
+          data: TEXT_DATA,
+          getText: d => d.text,
+          getPosition: d => d.position,
+          getColor: d => d.color,
+          id: "timestamp"
+        })
+        
+        const tileLayer = new TileLayer({
+        
+          autoHighlight : true,
+          highlightColor: [60, 60, 60, 40],
+          opacity: 1,
+          // https://wiki.openstreetmap.org/wiki/Zoom_levels
+          minZoom: 0,
+          maxZoom: 19,
+          tileSize: 256,
+        
+          
+          data: [
+            `http://{d90016be4e11c76b57d0311404f546f06afbae25}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png`
+          ],
+        
+          renderSubLayers: props => {
+            const {
+              bbox: { west, south, east, north }
+            } = props.tile;
+        
+            return new BitmapLayer(props, {
+              data: [],
+              image: props.data,
+              bounds: [west, south, east, north]
+            });
+          }
+        })
        
       // TODO refactor this. Layers are reverse, filtered, etc. only to be redefined later
       // TODO FIX tileLayer & textlayer need to be added manually
-        // wait until data is ready before render data layers
+      // wait until data is ready before render data layers
       if (layerOrder && layerOrder.length) {
           // last layer render first
           deckGlLayers = layerOrder
@@ -191,14 +189,29 @@ export class Scene extends Component {
               idx => layers[idx].overlayType === OVERLAY_TYPE.deckgl && layers[idx].id
             )
             .reduce(this._renderLayer, []);
+          // deckGlLayers.splice(0, 0, tileLayer)
+
+          // var i;
+          // for (i = 0; i < deckGlLayers.length; i++) {
+          //   deckGlLayers[i].shouldUpdateState()
+          // }
         }
+
         deckGlLayers[3] = timestamp;
         deckGlLayers[2] = deckGlLayers[1];
         deckGlLayers[1] = deckGlLayers[0]
         deckGlLayers[0] = tileLayer;
+
+        // var i;
+        // for (i = 0; i < deckGlLayers.length; i++) {
+        //   deckGlLayers[i].shouldUpdateState()
+        // }
+        // deckGlLayers.push(timestamp)
+        // deckGlLayers.push(tileLayer)
         
-        console.log("deckGlLayers ", deckGlLayers);
-        console.log("timestamp textlayer", timestamp)
+        // console.log("deckGlLayers ", deckGlLayers);
+        // console.log("timestamp textlayer", timestamp)
+        
 
         // MapboxGLMap
         const mapProps = {
@@ -212,25 +225,25 @@ export class Scene extends Component {
          const style = {
             position: 'relative'
           }
+          console.log("deckGlLayers ", deckGlLayers);
           console.log("tilelayer ",tileLayer);
         
+        console.log("deckGlLayers ", deckGlLayers);
         // console.log("this.props.adapter", this.props.adapter)
-        // console.log("current", current)
-        // ??? What is this.deckgl & current? Tried console logging and current doesn't exist
         return (
-            <div style={{width: '480px', height: "460px", position: 'relative'}}>
+            <div id="deck-canvas" style={{width: '480px', height: "460px", position: 'relative'}}>
               <DeckGL
                 ref={r => {this.deckgl={current:r}}}
                 viewState={mapState}
                 id="default-deckgl-overlay2"
                 layers={deckGlLayers}
+                layerFilter={this.layerFilter}
                 useDevicePixels={useDevicePixels}
                 style={style}
                 views={[
                   new MapView({repeat: true}),
-                  // new MapView({id: 'minimap', x: 10, y: 10, width: '20%', height: '20%', controller: true})
+                  // new OrthographicView({id: "timestamp"}) // BLOCKED TypeError: Cannot read property '0' of undefined
                 ]}
-                // views={views}
                 /* onBeforeRender={this._onBeforeRender} // Not yet
                       onHover={visStateActions.onLayerHover} // Not yet
                       onClick={visStateActions.onLayerClick}*/ // Not yet

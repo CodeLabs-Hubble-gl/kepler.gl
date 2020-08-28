@@ -25,9 +25,9 @@ import {Delete} from 'kepler.gl/components/common/icons';
 import ItemSelector from 'kepler.gl/components/common/item-selector/item-selector';
 import {Scene} from 'components/scene'; 
 
-// import * as turf from '@turf/turf';
-import { point, lineString, geometryCollection, featureCollection } from '@turf/helpers';
-import { transformTranslate } from '@turf/transform-translate';
+import * as turf from '@turf/turf';
+// import { point } from '@turf/helpers';
+// import { transformTranslate } from '@turf/transform-translate';
 
 
 import {
@@ -395,8 +395,8 @@ class RenderSettingsPanel extends Component {
     const secondKeyframe = camera.values[1]
 
     // Converts mapState object to turf friendly Point obj (GEOJSON)
-    const turfPoint = point([secondKeyframe.longitude, secondKeyframe.latitude])
-    console.log("turfPoint", turfPoint) // NOTE: Converts to point obj OK
+    const point = turf.point([camera.values[1].longitude, camera.values[1].latitude])
+    console.log("point", point)
     if (match[0] == "Orbit") {
       secondKeyframe.bearing = parseInt(match[1])
     }
@@ -406,19 +406,19 @@ class RenderSettingsPanel extends Component {
     const setChecker = new Set(["East", "South", "West", "North"])
     if (setChecker.has(match[0])) {
       if (match[0] == "East") { // TODO Temporary solution to catch this branch to master. Doesn't work for "East to North" for example if option allows in future
-        const translatedPoly = transformTranslate(turfPoint, 10000, 270);
+        const translatedPoly = turf.transformTranslate(point, 10000, 270);
         secondKeyframe.longitude = translatedPoly.geometry.coordinates[0]
       } else 
       if (match[0] == "South") {
-        const translatedPoly = transformTranslate(turfPoint, 10000, 0);
+        const translatedPoly = turf.transformTranslate(point, 10000, 0);
         secondKeyframe.latitude = translatedPoly.geometry.coordinates[1]
       } else 
       if (match[0] == "West") {
-        const translatedPoly = transformTranslate(turfPoint, 10000, 90);
+        const translatedPoly = turf.transformTranslate(point, 10000, 90);
         secondKeyframe.longitude = translatedPoly.geometry.coordinates[0]
       } else 
       if (match[0] == "North") {
-        const translatedPoly = transformTranslate(turfPoint, 10000, 180);
+        const translatedPoly = turf.transformTranslate(point, 10000, 180);
         console.log("translatedPoly", translatedPoly)
         secondKeyframe.latitude = translatedPoly.geometry.coordinates[1]
       }

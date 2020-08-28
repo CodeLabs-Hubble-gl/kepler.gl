@@ -739,6 +739,7 @@ export const toggleHubbleExportModalUpdater = (state, {payload: {isOpen}}) => (
   ...state,
   hubbleExportModalOpen: isOpen,
 });
+
 /**
  * Start saving storage  flow
  * @memberof uiStateUpdaters

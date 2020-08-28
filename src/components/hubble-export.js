@@ -57,7 +57,7 @@ class HubbleExport extends Component {
         return (
             <div>
                 <RenderSettingsModal isOpen={this.props.uiState.hubbleExportModalOpen} handleClose={this.handleClose.bind(this)} mapData={this.props}/>
-                <ThemeProvider theme={RenderSettingsModal}></ThemeProvider>
+                {/* <ThemeProvider theme={RenderSettingsModal}></ThemeProvider> */}
                 <Button onClick={() => this.handleExport()}>Export</Button> {/* anonymous function to bind state onclick  */}
             </div>
         )
