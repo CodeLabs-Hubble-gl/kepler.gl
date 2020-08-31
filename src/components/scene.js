@@ -107,13 +107,15 @@ export class Scene extends Component {
       // This is provisional - 
       // [ADD] TileLayer to the array of layers
 
-      layerFilter({layer, viewport}) { // TODO
-        if (layer.id === 'timestamp') {
+      layerFilter({layer, viewport}) {
+        // console.log("viewport.getBounds()", viewport.getBounds()) // returns values. There was a concern this wasn't set
+        // console.log("viewport", viewport)
+        if (viewport.id === 'MapView' && layer.id === 'timestamp') {
         // if (viewport.id === 'first-person' && layer.id === 'timestamp') {
           // Do not draw the car layer in the first person view
-          return false;
+          return true;
         }
-        return true;
+        return false;
       }
        
      //   interactionConfig,  
@@ -136,7 +138,7 @@ export class Scene extends Component {
         const TEXT_DATA = [
           {
             text: 'Hello\nWorld', // TODO make this an input and parse their str. Ex: new line becomes \n
-            position: [0, 0],
+            position: [1, 1],
             color: [255, 0, 0] // TODO temporarily red
           }
         ];
@@ -168,7 +170,8 @@ export class Scene extends Component {
             const {
               bbox: { west, south, east, north }
             } = props.tile;
-        
+            
+            console.log("bounds", [west, south, east, north])
             return new BitmapLayer(props, {
               data: [],
               image: props.data,
@@ -225,11 +228,9 @@ export class Scene extends Component {
          const style = {
             position: 'relative'
           }
-          console.log("deckGlLayers ", deckGlLayers);
           console.log("tilelayer ",tileLayer);
         
         console.log("deckGlLayers ", deckGlLayers);
-        // console.log("this.props.adapter", this.props.adapter)
         return (
             <div id="deck-canvas" style={{width: '480px', height: "460px", position: 'relative'}}>
               <DeckGL
@@ -241,8 +242,8 @@ export class Scene extends Component {
                 useDevicePixels={useDevicePixels}
                 style={style}
                 views={[
-                  new MapView({repeat: true}),
-                  // new OrthographicView({id: "timestamp"}) // BLOCKED TypeError: Cannot read property '0' of undefined
+                  new MapView({id: 'MapView', repeat: true}),
+                  new OrthographicView({id: "timestamp"}) // BLOCKED TypeError: Cannot read property '0' of undefined
                 ]}
                 /* onBeforeRender={this._onBeforeRender} // Not yet
                       onHover={visStateActions.onLayerHover} // Not yet
