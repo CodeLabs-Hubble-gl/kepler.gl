@@ -97,6 +97,7 @@
     "@turf/bbox": "^6.0.1",
     "@turf/boolean-within": "^6.0.1",
     "@turf/helpers": "^6.1.4",
+    "@turf/transform-translate": "^5.1.5",
     "classnames": "^2.2.1",
     "colorbrewer": "^1.0.0",
     "copy-to-clipboard": "^3.3.1",

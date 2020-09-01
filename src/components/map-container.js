@@ -544,12 +544,10 @@ export default function MapContainerFactory(MapPopover, MapControl, Editor) {
             transitionDuration={TRANSITION_DURATION}
             onMouseMove={this.props.visStateActions.onMouseMove}
           >
-         
 
-
-           {this._renderDeckOverlay(layersToRender)}
+            {/* Stops rendering Deck layers when export modal open to allow for more resources when rendering w/ Hubble. */}
+            {!uiState.hubbleExportModalOpen && this._renderDeckOverlay(layersToRender)}
             {this._renderMapboxOverlays(layersToRender)}
-
 
             <Editor
               index={index}
