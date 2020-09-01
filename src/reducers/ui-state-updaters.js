@@ -730,7 +730,7 @@ export const setLocaleUpdater = (state, {payload: {locale}}) => ({
  * @param action
  * @param action.payload
  * @param action.payload.isOpen
- * @returns nextState TODO doesn't return anything? What is nextState?
+ * @returns nextState
  * @type {typeof import('./ui-state-updaters').toggleHubbleExportModalUpdater}
  * @public
  */
