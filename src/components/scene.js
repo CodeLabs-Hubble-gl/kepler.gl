@@ -107,14 +107,15 @@ export class Scene extends Component {
       // This is provisional - 
       // [ADD] TileLayer to the array of layers
 
-      layerFilter({layer, viewport}) {
+      layerFilter({layer, viewport}) { 
         // console.log("viewport.getBounds()", viewport.getBounds()) // returns values. There was a concern this wasn't set
         // console.log("viewport", viewport)
-        if (viewport.id === 'MapView' && layer.id === 'timestamp') {
-        // if (viewport.id === 'first-person' && layer.id === 'timestamp') {
-          // Do not draw the car layer in the first person view
+        if (viewport.id === 'timestamp' && layer.id === 'timestamp') { // Renders timestamp in OrthographicView only
           return true;
-        }
+        }  
+        else if (viewport.id === 'MapView' && layer.id !== 'timestamp') { // Renders rest of views in MapView
+          return true
+        } 
         return false;
       }
        
@@ -138,7 +139,7 @@ export class Scene extends Component {
         const TEXT_DATA = [
           {
             text: 'Hello\nWorld', // TODO make this an input and parse their str. Ex: new line becomes \n
-            position: [1, 1],
+            position: [1, 1], // TODO RESEARCH coordinate system prop. Change to x,y,z. Also look up Coordinate origin in layer base class documentation
             color: [255, 0, 0] // TODO temporarily red
           }
         ];
@@ -160,7 +161,8 @@ export class Scene extends Component {
           minZoom: 0,
           maxZoom: 19,
           tileSize: 256,
-        
+          // getTileData: ({x, y, z}) => {return load(`http://d90016be4e11c76b57d0311404f546f06afbae25.basemaps.cartocdn.com/dark_all/${z}/${x}/${y}.png`);}, // BLOCKED https://github.com/visgl/deck.gl/search?q=getTileData&unscoped_q=getTileData
+          // getTileData,
           
           data: [
             `http://{d90016be4e11c76b57d0311404f546f06afbae25}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png`
